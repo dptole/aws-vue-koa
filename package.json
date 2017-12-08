@@ -1,0 +1,58 @@
+{
+  "name": "aws-vue-koa",
+  "version": "1.0.0",
+  "description": "Learning Vue.js, Koa with the AWS-SDK",
+  "main": "app.js",
+  "scripts": {
+    "gulp-dev": "gulp dev",
+    "gulp-prod": "gulp prod",
+    "gulp-watch-dev": "gulp watch-dev",
+    "gulp-watch-prod": "gulp watch-prod",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Danillo",
+    "email": "danillo.paiva.toledo@gmail.com",
+    "url": "dptole.ngrok.io"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.165.0",
+    "koa": "^2.4.1",
+    "koa-multer": "^1.0.2",
+    "koa-route": "^3.2.0",
+    "koa-static": "^4.0.2",
+    "vue": "^2.5.9"
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-preprocess": "^2.0.0",
+    "gulp-uglify": "^3.0.0",
+    "pump": "^2.0.0",
+    "run-sequence": "^2.2.0"
+  },
+  "config": {
+    "folders": {
+      "upload": "./backend/uploads",
+      "build": "./frontend/build",
+      "src": "./frontend/src"
+    },
+    "server": {
+      "http": {
+        "hostname": "localhost",
+        "port": 9999
+      }
+    },
+    "aws": {
+      "s3": {
+        "accessKeyId": "",
+        "secretAccessKey": "",
+        "region": ""
+      }
+    }
+  }
+}
