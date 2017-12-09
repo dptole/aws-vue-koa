@@ -89,16 +89,11 @@
                 rejected.push(error);
               }).then(function() {
                 console.log(files);
-                if(files.length < 1) {
-                  console.log({
-                    resolved: resolved,
-                    rejected: rejected
-                  });
+                if(files.length < 1)
                   return {
                     resolved: resolved,
                     rejected: rejected
                   };
-                }
               });
             });
           }, Promise.resolve());

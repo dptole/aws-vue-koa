@@ -52,6 +52,7 @@ Vue.component('s3-read', {
       }
 
       s3_read.$parent.listBuckets().then(function(buckets) {
+        s3_read.error_message = '';
         s3_read.buckets = buckets;
       }).catch(function(error) {
         s3_read.error_message = error;
