@@ -1,0 +1,38 @@
+
+
+<div id="upload_objects">
+  <div v-if="files.length === 0">
+    <div>File:</div>
+    <div><input multiple @change="selectFile" type="file" :disabled="is_loading"></div>
+  </div>
+
+  <div v-if="files.length &gt; 0">
+    <ul>
+      <li v-for="file in files">
+        <a href="#" @click.prevent="removeFile(file)">X</a> | {{ file.name }}
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <div>Bucket name:</div>
+    <div>
+      <select v-model="selected_bucket" :disabled="is_loading" v-if="bucket_list">
+        <option :value="bucket.Name" v-for="bucket in bucket_list">{{ bucket.Name }}</option>
+      </select>
+      <button v-if="!bucket_list" @click="loadBuckets" :disabled="is_loading">Load buckets</button>
+    </div>
+  </div>
+  <div>
+    <div>Key name:</div>
+    <div><input type="text" v-model="key_name" :disabled="is_loading"></div>
+  </div>
+  <div>
+    <button @click.prevent="uploadFile" :disabled="is_loading">Upload</button> {{ loading_text }}
+  </div>
+  <div v-if="last_upload_result">
+    <div>Upload result:</div>
+    <pre>Success: {{ last_upload_result.resolved.length }}</pre>
+    <pre>Failure: {{ last_upload_result.rejected.length }}</pre>
+  </div>
+</div>

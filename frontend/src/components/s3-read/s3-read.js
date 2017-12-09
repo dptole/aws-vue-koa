@@ -1,55 +1,60 @@
 
 Vue.component('s3-read', {
-  template: '\
-    <div id="list_buckets">\
-      <div>\
-        <button @click="listBuckets" id="button_list" :disabled="state !== \'normal\'">List</button> {{ state === \'loading\' ? \'Loading...\' : \'\' }}\
-      </div>\
-\
-      <ul v-if="buckets && !bucket_objects">\
-        <li>Buckets</li>\
-        <li v-for="bucket in buckets.Buckets">\
-          <a href="#" @click.prevent="listObjects(bucket)">{{ bucket.Name }}</a>\
-        </li>\
-      </ul>\
-\
-      <ul v-if="bucket_objects">\
-        <li>{{ bucket_objects.Contents.length }} Objects</li>\
-        <li>\
-          <a href="#" @click.prevent="listBuckets">Back to bucket</a>\
-        </li>\
-        <li>\
-          <input :disabled="state !== \'normal\'" placeholder="Filter..." type="search" v-model="filter_text" @keyup="filterObjects"> {{ filter_status }}\
-        </li>\
-        <li v-for="object in bucket_objects.Contents" v-if="!object.hide">\
-          <a href="#" @click.prevent="deleteObject(current_bucket, object.Key)">X</a> | <a :href="getObjectURL(bucket_objects.Name, object.Key)" target="_blank">{{ bucket_objects.Name }}/{{ object.Key }}</a>\
-        </li>\
-      </ul>\
-    </div>',
+  template: '/* @include s3-read.vue.html */',
 
   data: function() {
     return this.$parent.s3_read_data;
+  },
+  computed: {
+    loading_text: function() {
+      return this.is_loading ? 'Loading...' : '';
+    },
+    is_loading: function() {
+      return this.state === 'loading';
+    },
+    last_object_key: function() {
+      return this.bucket_objects &&
+        this.bucket_objects.Contents &&
+        this.bucket_objects.Contents[this.bucket_objects.Contents.length - 1] &&
+        this.bucket_objects.Contents[this.bucket_objects.Contents.length - 1].Key
+      ;
+    },
+    current_page: function() {
+      var s3_read = this
+        , this_page
+      ;
+
+      if(!(
+        this_page = s3_read.bucket_objects_pages.find(function(bucket_objects_page) {
+          return bucket_objects_page === s3_read.bucket_objects;
+        })
+      ))
+        return 0;
+
+      var this_pages_index = s3_read.bucket_objects_pages.indexOf(this_page);
+      return ~this_pages_index ? this_pages_index : 0;
+    }
   },
   methods: {
     listBuckets: function() {
       var s3_read = this;
 
-      if(s3_read.state === 'loading')
+      if(s3_read.is_loading)
         return false;
 
       s3_read.state = 'loading';
       s3_read.bucket_objects = null;
       s3_read.current_bucket = null;
-      s3_read.current_objects_page = null;
 
       if(s3_read.buckets) {
         s3_read.state = 'normal';
         return false;
       }
 
-      this.$parent.listBuckets().then(function(buckets) {
+      s3_read.$parent.listBuckets().then(function(buckets) {
         s3_read.buckets = buckets;
       }).catch(function(error) {
+        s3_read.error_message = error;
         console.log(error);
       }).then(function() {
         s3_read.state = 'normal';
@@ -61,18 +66,22 @@ Vue.component('s3-read', {
     filterObjects: function() {
       var timeout = null;
       
-      return function() {
+      return function(event) {
         var s3_read = this;
         clearTimeout(timeout);
-        s3_read.filter_text = s3_read.filter_text.replace(/\s\s/g, ' ');
-        
+
         if(s3_read.filter_text.length < 1) {
           s3_read.filter_status = '';
-          s3_read.bucket_objects.Contents.forEach(function(object) {
+          s3_read.bucket_objects.Contents = s3_read.bucket_objects.Contents.map(function(object) {
             object.hide = false;
+            return object;
           });
-
         } else {
+          if(event && !(event.key.length === 1 || ~[8, 13].indexOf(event.keyCode))) {
+            s3_read.filter_status = '';
+            return false;
+          }
+
           s3_read.filter_status = 'Filtering...';
 
           timeout = setTimeout(function() {
@@ -93,7 +102,7 @@ Vue.component('s3-read', {
     deleteObject: function(bucket, key) {
       var s3_read = this;
 
-      if(s3_read.state === 'loading')
+      if(s3_read.is_loading)
         return false;
 
       if(!confirm('Delete the file\n\n' + key + '\n\nAre you sure?'))
@@ -101,7 +110,7 @@ Vue.component('s3-read', {
 
       s3_read.state = 'loading';
 
-      this.$parent.deleteObject({
+      s3_read.$parent.deleteObject({
         bucket: bucket.Name,
         key: key
       }).then(function() {
@@ -114,26 +123,85 @@ Vue.component('s3-read', {
     listObjects: function(bucket) {
       var s3_read = this;
 
-      if(s3_read.state === 'loading')
+      if(s3_read.is_loading)
         return false;
 
       s3_read.state = 'loading';
       s3_read.current_bucket = bucket;
       s3_read.filter_text = '';
       s3_read.filter_status = '';
+      s3_read.bucket_objects_pages = [];
 
       var query = {
         bucket: bucket.Name,
-        prefix: s3_read.current_prefix
+        max_keys: s3_read.max_keys
       };
 
-      this.$parent.listObjects(query).then(function(bucket_objects) {
+      s3_read.$parent.listObjects(query).then(function(bucket_objects) {
+        s3_read.bucket_objects_pages.push(bucket_objects);
         s3_read.bucket_objects = bucket_objects;
       }).catch(function(error) {
+        s3_read.error_message = error;
         console.log(error);
       }).then(function() {
         s3_read.state = 'normal';
       });
+    },
+    nextPage: function(bucket, start_after) {
+      var s3_read = this;
+
+      if(s3_read.scrollPage(1))
+        return true;
+
+      if(s3_read.is_loading)
+        return false;
+
+      s3_read.state = 'loading';
+
+      var query = {
+        bucket: bucket.Name,
+        max_keys: s3_read.max_keys,
+        start_after: start_after
+      };
+
+      s3_read.$parent.nextPage(query).then(function(bucket_objects) {
+        s3_read.bucket_objects_pages.push(bucket_objects);
+        s3_read.bucket_objects = bucket_objects;
+      }).catch(function(error) {
+        s3_read.error_message = error;
+        console.log(error);
+      }).then(function() {
+        s3_read.filterObjects();
+        s3_read.state = 'normal';
+      });
+
+      return true;
+    },
+    previousPage: function() {
+      if(this.is_loading)
+        return false;
+
+      return this.scrollPage(-1);
+    },
+    scrollPage: function(scroll) {
+      if(this.is_loading)
+        return false;
+
+      return this.moveToPage(this.current_page + scroll);
+    },
+    moveToPage: function(page) {
+      var s3_read = this;
+
+      if(s3_read.is_loading)
+        return false;
+
+      if(!s3_read.bucket_objects_pages[page])
+        return false;
+
+      s3_read.bucket_objects = s3_read.bucket_objects_pages[page];
+      s3_read.filterObjects();
+
+      return true;
     }
   }
 });

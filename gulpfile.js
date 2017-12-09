@@ -1,7 +1,10 @@
 
+let NODE_ENV = 'dev'
+
 const gulp = require('gulp')
 const gulp_uglify = require('gulp-uglify')
 const gulp_htmlmin = require('gulp-htmlmin')
+const gulp_replace = require('gulp-replace')
 const gulp_clean_css = require('gulp-clean-css')
 const gulp_concat = require('gulp-concat')
 const gulp_preprocess = require('gulp-preprocess')
@@ -16,8 +19,6 @@ const vue_path = {
   dev: 'node_modules/vue/dist/vue.js',
   production: 'node_modules/vue/dist/vue.min.js'
 }
-let NODE_ENV = 'dev'
-
 gulp.task('js', function(callback) {
   pump([
     gulp.src([build_folder + '/**/*.js']),
@@ -33,6 +34,15 @@ gulp.task('vue', function(callback) {
     gulp_concat('js/app.js'),
     gulp.dest(build_folder)
   ], callback);
+})
+
+gulp.task('preprocess-vue', function(callback) {
+  pump([
+    gulp.src(build_folder + '/**/*.vue.html'),
+    gulp_htmlmin({collapseWhitespace: true}),
+    gulp_replace('"', '\\"'),
+    gulp.dest(build_folder)
+  ], callback)
 })
 
 gulp.task('html', function(callback) {
@@ -98,19 +108,25 @@ gulp.task('preprocess-prod', function(callback) {
   ], callback)
 })
 
-gulp.task('clean', function(callback) {
+gulp.task('del', function(callback) {
   del([build_folder]).then(function() {
+    callback()
+  })
+})
+
+gulp.task('clean-up', function(callback) {
+  del([build_folder + '/**/*.vue.html']).then(function() {
     callback()
   })
 })
 
 gulp.task('prod', function(callback) {
   NODE_ENV = 'production'
-  gulp_run_sequence('clean', 'copy', 'preprocess-prod', 'html', 'css', 'js', 'vue', callback)
+  gulp_run_sequence('del', 'copy', 'preprocess-vue', 'preprocess-prod', 'html', 'css', 'js', 'vue', 'clean-up', callback)
 })
 
 gulp.task('dev', ['default'])
 
 gulp.task('default', function(callback) {
-  return gulp_run_sequence('clean', 'copy', 'preprocess-dev', 'vue', callback)
+  return gulp_run_sequence('del', 'copy', 'preprocess-vue', 'preprocess-dev', 'vue', 'clean-up', callback)
 })

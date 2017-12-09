@@ -3,11 +3,12 @@
   <head>
     <title>Vue + Koa + AWS SDK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" href="https://vuejs.org/images/logo.png" type="image/png">
     <script src="/js/bootstrap.js"></script>
     <link rel="stylesheet" href="/css/app.css">
   </head>
   <body>
-    <noscript>Enable JavaScript.</noscript>
+    <noscript>Enable JavaScript to finish loading.</noscript>
 
     <div class="page-loading">Loading...</div>
 
@@ -17,13 +18,13 @@
           Components:
           <ul>
             <li v-for="component in components">
-              <button :disabled="isLoading" @click="changeComponent(component)">{{ component }}</button>
+              <button :disabled="is_loading" @click="changeComponent(component)">{{ component }}</button>
             </li>
           </ul>
         </div>
 
-        <s3-read v-if="selected_component === 's3-read'"></s3-read>
-        <s3-write v-if="selected_component === 's3-write'"></s3-write>
+        <s3-read v-if="s3_read_visible"></s3-read>
+        <s3-write v-if="s3_write_visible"></s3-write>
       </div>
     </div>
   </body>

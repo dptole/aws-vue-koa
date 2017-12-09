@@ -26,10 +26,6 @@ div.body.page-loaded {
   margin-top: unset;
 }
 
-#preview[v-show=true] {
-  opacity: 1;
-}
-
 #preview {
   position: fixed;
   transition: opacity 1s;
@@ -42,4 +38,13 @@ div.body.page-loaded {
   background: -webkit-linear-gradient(left, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(to right, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
+}
+
+button[css-current-page=true] {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+button[css-invisible=true] {
+  visibility: hidden;
 }

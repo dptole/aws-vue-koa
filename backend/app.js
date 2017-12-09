@@ -18,7 +18,8 @@ function backendApp(_package) {
 
   http_server.use((ctx, next) => {
     ctx.response.header['content-type'] = 'application/json;charset=utf-8'
-    console.log(ctx.request.method, ctx.request.url)
+    const date = new Date
+    console.log(date.toJSON(), 'TZ:' + date.getTimezoneOffset(), ctx.request.method, ctx.request.url)
     return next()
   })
 
@@ -27,7 +28,7 @@ function backendApp(_package) {
       return upload.single('file')(ctx, _ => {
         const files = fs.readdirSync(upload_folder)
         if(files.length < 1) {
-          response.statusCode = 500
+          ctx.status = 500
           ctx.body = {
             error: 'unable to upload the file'
           }
@@ -43,12 +44,14 @@ function backendApp(_package) {
         }).then(data => {
           ctx.body = data
         }).catch(error => {
-          ctx.response.statusCode = 500
+          ctx.status = 500
           ctx.body = {
             error: 'unable to put the object'
           }
         }).then(_ => {
-          files.forEach(file => fs.unlinkSync(path.resolve(upload_folder, file)))
+          files
+            .filter(file => !/^readme\.md$/i.test(file))
+            .forEach(file => fs.unlinkSync(path.resolve(upload_folder, file)))
         })
       })
     })
@@ -60,7 +63,7 @@ function backendApp(_package) {
         ctx.body = data
       ).catch(error => {
         console.log(error)
-        ctx.response.statusCode = 500
+        ctx.status = 500
         ctx.body = {
           error: 'unable to list buckets'
         }
@@ -77,7 +80,7 @@ function backendApp(_package) {
         ctx.body = data
       ).catch(error => {
         console.log(error)
-        ctx.response.statusCode = 500
+        ctx.status = 500
         ctx.body = {
           error: 'unable to delete the object'
         }
@@ -90,12 +93,12 @@ function backendApp(_package) {
       return await s3_lib.listObjectsV2({
         Bucket: ctx.query.bucket,
         StartAfter: ctx.query.start_after,
-        Prefix: ctx.query.prefix
+        MaxKeys: ctx.query.max_keys
       }).then(data =>
         ctx.body = data
       ).catch(error => {
         console.log(error)
-        ctx.response.statusCode = 500
+        ctx.status = 500
         ctx.body = {
           error: 'unable to list objects'
         }
@@ -112,7 +115,7 @@ function backendApp(_package) {
         ctx.body = data
       ).catch(error => {
         console.log(error)
-        ctx.response.statusCode = 500
+        ctx.status = 500
         ctx.body = {
           error: 'unable to list objects'
         }

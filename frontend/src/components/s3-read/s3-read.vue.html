@@ -1,0 +1,50 @@
+
+<div id="list_buckets">
+  <div>
+    <button @click="listBuckets" :disabled="is_loading">List</button> {{ loading_text }}
+  </div>
+
+  <div>
+    {{ error_message }}
+  </div>
+
+  <ul v-if="buckets &amp;&amp; !bucket_objects">
+    <li>Buckets</li>
+    <li v-for="bucket in buckets.Buckets">
+      <a href="#" @click.prevent="listObjects(bucket)">{{ bucket.Name }}</a>
+    </li>
+  </ul>
+
+  <ul v-if="bucket_objects">
+    <li>
+      This bucket: {{ bucket_objects.Name }}
+    </li>
+    <li>
+      <a href="#" @click.prevent="listBuckets">Back to bucket list</a>
+    </li>
+    <li>
+      {{ bucket_objects.Contents.length }} Objects on this page
+    </li>
+    <li>
+      Pages:
+      
+      <button :css-invisible="bucket_objects_pages.length &lt; 1 || current_page &lt; 1" href="#" :disabled="is_loading" @click.prevent="previousPage()">&larr;</button>
+      
+      <button :css-invisible="!last_object_key || bucket_objects.KeyCount !== bucket_objects.MaxKeys" href="#" :disabled="is_loading" @click.prevent="nextPage(current_bucket, last_object_key)">&rarr;</button>
+    </li>
+    <li>
+      <button :disabled="is_loading" v-for="bucket_objects_page, page in bucket_objects_pages" :css-current-page="page === current_page" @click="moveToPage(page)">
+        {{ page + 1 }}
+      </button>
+    </li>
+    <li>
+      <input :disabled="is_loading" placeholder="Filter..." type="search" v-model="filter_text" @keyup="filterObjects"> {{ filter_status }}
+    </li>
+    
+    <li></li>
+    
+    <li v-for="object in bucket_objects.Contents" v-if="!object.hide">
+      <a href="#" @click.prevent="deleteObject(current_bucket, object.Key)">X</a> | <a :href="getObjectURL(bucket_objects.Name, object.Key)" target="_blank">{{ bucket_objects.Name }}/{{ object.Key }}</a>
+    </li>
+  </ul>
+</div>
