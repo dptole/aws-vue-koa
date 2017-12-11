@@ -1,7 +1,7 @@
 
 <div id="list_buckets">
   <div>
-    <button @click="listBuckets" :disabled="is_loading">List</button> {{ loading_text }}
+    <button @click="listBuckets()" :disabled="is_loading">List</button> {{ loading_text }}
   </div>
 
   <div>
@@ -9,7 +9,7 @@
   </div>
 
   <ul v-if="buckets &amp;&amp; !bucket_objects">
-    <li>Buckets</li>
+    <li>Buckets <a href="#" @click.prevent="listBuckets(true)">&#x27F3;</a></li>
     <li v-for="bucket in buckets.Buckets">
       <a href="#" @click.prevent="listObjects(bucket)">{{ bucket.Name }}</a>
     </li>
@@ -20,7 +20,7 @@
       This bucket: {{ bucket_objects.Name }}
     </li>
     <li>
-      <a href="#" @click.prevent="listBuckets">Back to bucket list</a>
+      <a href="#" @click.prevent="listBuckets()">Back to bucket list</a>
     </li>
     <li>
       {{ bucket_objects.Contents.length }} Objects on this page

@@ -7,10 +7,10 @@ Vue.component('s3-write', {
   },
   computed: {
     loading_text: function() {
-      return this.is_loading
-        ? 'Loading...'
-        : this.is_uploading
+      return this.is_uploading
         ? 'Uploading...'
+        : this.is_loading
+        ? 'Loading...'
         : ''
       ;
     },
@@ -36,7 +36,6 @@ Vue.component('s3-write', {
       }).catch(function(error) {
         s3_write.bucket_list = null;
         s3_write.error_message = error;
-        console.log(error);
       }).then(function() {
         s3_write.state = 'normal';
       });
@@ -64,7 +63,6 @@ Vue.component('s3-write', {
         s3_write.last_upload_result = json;
       }).catch(function(error) {
         s3_write.error_message = error;
-        console.log(error);
       }).then(function() {
         s3_write.file = null;
         s3_write.state = 'normal';

@@ -36,7 +36,7 @@ Vue.component('s3-read', {
     }
   },
   methods: {
-    listBuckets: function() {
+    listBuckets: function(from_network) {
       var s3_read = this;
 
       if(s3_read.is_loading)
@@ -46,17 +46,16 @@ Vue.component('s3-read', {
       s3_read.bucket_objects = null;
       s3_read.current_bucket = null;
 
-      if(s3_read.buckets) {
+      if(s3_read.buckets && !from_network) {
         s3_read.state = 'normal';
         return false;
       }
 
-      s3_read.$parent.listBuckets().then(function(buckets) {
+      s3_read.$parent.listBuckets(from_network).then(function(buckets) {
         s3_read.error_message = '';
         s3_read.buckets = buckets;
       }).catch(function(error) {
         s3_read.error_message = error;
-        console.log(error);
       }).then(function() {
         s3_read.state = 'normal';
       });
@@ -121,7 +120,7 @@ Vue.component('s3-read', {
 
       return true
     },
-    listObjects: function(bucket) {
+    listObjects: function(bucket, from_network) {
       var s3_read = this;
 
       if(s3_read.is_loading)
@@ -138,12 +137,11 @@ Vue.component('s3-read', {
         max_keys: s3_read.max_keys
       };
 
-      s3_read.$parent.listObjects(query).then(function(bucket_objects) {
+      s3_read.$parent.listObjects(query, from_network).then(function(bucket_objects) {
         s3_read.bucket_objects_pages.push(bucket_objects);
         s3_read.bucket_objects = bucket_objects;
       }).catch(function(error) {
         s3_read.error_message = error;
-        console.log(error);
       }).then(function() {
         s3_read.state = 'normal';
       });
@@ -170,7 +168,6 @@ Vue.component('s3-read', {
         s3_read.bucket_objects = bucket_objects;
       }).catch(function(error) {
         s3_read.error_message = error;
-        console.log(error);
       }).then(function() {
         s3_read.filterObjects();
         s3_read.state = 'normal';

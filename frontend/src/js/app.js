@@ -7,6 +7,12 @@
     if(div) div.classList.add('page-loaded');
     document.body.classList.add('page-loaded');
   }).then(function() {
+    var max_keys = 50;
+
+    // @if NODE_ENV='dev'
+    max_keys = 1000
+    // @endif
+
     var app = new Vue({
       el: '#app',
       data: {
@@ -22,7 +28,7 @@
           filter_text: '',
           filter_status: '',
           error_message: '',
-          max_keys: navigator.connection.rtt > 300 ? 20 : 1000,
+          max_keys: max_keys,
           state: 'normal' // loading, normal
         },
         s3_write_data: {
@@ -60,11 +66,13 @@
           }, []).join('&');
         },
 
-        nextPage: function(query) {
+        nextPage: function(query, from_network) {
           var query_string = this.serializeQuery(query);
 
-          return fetch('/api/list_objects?' + query_string).then(function(response) {
-            return response.json()
+          return fetch('/api/list_objects?' + query_string, {
+            headers: app.getRequestHeaders(from_network)
+          }).then(function(response) {
+            return response.json();
           });
         },
         getObjectURL: function(bucket_name, object_key) {
@@ -88,7 +96,6 @@
               }).catch(function(error) {
                 rejected.push(error);
               }).then(function() {
-                console.log(files);
                 if(files.length < 1)
                   return {
                     resolved: resolved,
@@ -111,11 +118,18 @@
             return response.json();
           });
         },
-        listBuckets: function() {
-          if(app.bucket_list)
+        getRequestHeaders: function (from_network) {
+          return {
+            'x-fe-to': from_network === true ? 'network' : 'js-cache-api'
+          };
+        },
+        listBuckets: function(from_network) {
+          if(app.bucket_list && !from_network)
             return Promise.resolve(app.bucket_list);
 
-          return fetch('/api/list_buckets').then(function(response) {
+          return fetch('/api/list_buckets', {
+            headers: app.getRequestHeaders(from_network)
+          }).then(function(response) {
             return response.json().then(function(buckets) {
               if(app.isValidBucket(buckets) && response.status === 200) {
                 app.bucket_list = buckets;
@@ -135,9 +149,11 @@
             return response.json();
           });
         },
-        listObjects: function(query) {
+        listObjects: function(query, from_network) {
           var query_string = this.serializeQuery(query);
-          return fetch('/api/list_objects?' + query_string).then(function(response) {
+          return fetch('/api/list_objects?' + query_string, {
+            headers: app.getRequestHeaders(from_network)
+          }).then(function(response) {
             return response.json();
           });
         },

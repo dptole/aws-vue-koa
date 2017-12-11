@@ -2,7 +2,7 @@
 let NODE_ENV = 'dev'
 
 const gulp = require('gulp')
-const gulp_uglify = require('gulp-uglify')
+const gulp_uglify_es = require('gulp-uglify-es').default
 const gulp_htmlmin = require('gulp-htmlmin')
 const gulp_replace = require('gulp-replace')
 const gulp_clean_css = require('gulp-clean-css')
@@ -22,7 +22,7 @@ const vue_path = {
 gulp.task('js', function(callback) {
   pump([
     gulp.src([build_folder + '/**/*.js']),
-    gulp_uglify(),
+    gulp_uglify_es(),
     gulp.dest(build_folder)
   ], callback)
 })
@@ -30,7 +30,7 @@ gulp.task('js', function(callback) {
 gulp.task('vue', function(callback) {
   pump([
     gulp.src([build_folder + '/js/app.js', vue_path[NODE_ENV]]),
-    gulp_uglify(),
+    gulp_uglify_es(),
     gulp_concat('js/app.js'),
     gulp.dest(build_folder)
   ], callback);
@@ -68,11 +68,15 @@ gulp.task('css', function(callback) {
 })
 
 gulp.task('watch-dev', function(callback) {
-  gulp.watch([src_folder + '/**'], ['dev'])
+  gulp_run_sequence('dev', function() {
+    gulp.watch([src_folder + '/**'], ['dev'])
+  })
 })
 
 gulp.task('watch-prod', function(callback) {
-  gulp.watch([src_folder + '/**'], ['prod'])
+  gulp_run_sequence('prod', function() {
+    gulp.watch([src_folder + '/**'], ['prod'])
+  })
 })
 
 gulp.task('copy', function(callback) {
