@@ -85,13 +85,14 @@ Vue.component('s3-read', {
           s3_read.filter_status = 'Filtering...';
 
           timeout = setTimeout(function() {
-            var regex = RegExp(s3_read.filter_text, 'gim');
+            var regex = RegExp(s3_read.filter_text, 'i');
             var total = 0;
 
-            s3_read.bucket_objects.Contents.forEach(function(object) {
+            s3_read.bucket_objects.Contents = s3_read.bucket_objects.Contents.map(function(object) {
               object.hide = !regex.test(object.Key);
               if(!object.hide)
                 total++;
+              return object;
             });
 
             s3_read.filter_status = total + ' objects filtered';
