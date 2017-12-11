@@ -26,21 +26,12 @@ function backendApp(_package) {
   http_server.use(
     koa_route.post('/api/put_object', async (ctx, next) => {
       return upload.single('file')(ctx, _ => {
-        const files = fs.readdirSync(upload_folder)
-        if(files.length < 1) {
-          ctx.status = 500
-          ctx.body = {
-            error: 'unable to upload the file'
-          }
-          return
-        }
-        const file = files[0]
-
         return s3_lib.putObject({
-          Body: fs.readFileSync(path.resolve(upload_folder, file)),
+          Body: fs.readFileSync(path.resolve(upload_folder, ctx.req.file.originalname)),
           Bucket: ctx.query.bucket,
           ACL: 'public-read',
-          Key: path.join(ctx.query.key, file)
+          ContentType: ctx.req.file.mimetype,
+          Key: path.join(ctx.query.key, ctx.req.file.originalname)
         }).then(data => {
           ctx.body = data
         }).catch(error => {
@@ -48,10 +39,6 @@ function backendApp(_package) {
           ctx.body = {
             error: 'unable to put the object'
           }
-        }).then(_ => {
-          files
-            .filter(file => !/^readme\.md$/i.test(file))
-            .forEach(file => fs.unlinkSync(path.resolve(upload_folder, file)))
         })
       })
     })
