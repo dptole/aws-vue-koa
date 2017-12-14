@@ -19,10 +19,12 @@
   "dependencies": {
     "aws-sdk": "^2.165.0",
     "koa": "^2.4.1",
+    "koa-json-body": "^5.3.0",
     "koa-multer": "^1.0.2",
     "koa-route": "^3.2.0",
     "koa-static": "^4.0.2",
-    "vue": "^2.5.9"
+    "vue": "^2.5.9",
+    "vue-router": "^3.0.1"
   },
   "devDependencies": {
     "del": "^3.0.0",
@@ -46,13 +48,6 @@
       "http": {
         "hostname": "localhost",
         "port": 9999
-      }
-    },
-    "aws": {
-      "s3": {
-        "accessKeyId": "",
-        "secretAccessKey": "",
-        "region": ""
       }
     }
   }

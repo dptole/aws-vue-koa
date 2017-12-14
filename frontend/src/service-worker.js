@@ -5,8 +5,7 @@ const cached_files = [
   '/css/app.css',
   '/js/bootstrap.js',
   '/js/app.js',
-  '/components/s3-read/s3-read.js',
-  '/components/s3-write/s3-write.js'
+  '/components/login/avk-login.js'
 ]
 
 function getCache() {

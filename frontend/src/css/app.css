@@ -1,36 +1,12 @@
 
-* {
-  font-family: courier new;
-  word-wrap: break-word;
+body {
+  overflow-x: hidden;
 }
 
-div.page-loading {
-  transition: all 1s;
-  opacity: 1;
-  height: 30px;
-}
-
-body.page-loaded > div.page-loading {
-  opacity: 0;
-  height: 0px;
-}
-
-div.body {
-  transition: all 1s;
-  margin-top: 40px;
-  opacity: 0;
-}
-
-div.body.page-loaded {
-  opacity: 1;
-  margin-top: unset;
-}
-
-button[css-current-page=true] {
-  background-color: transparent;
-  border-color: transparent;
-}
-
-button[css-invisible=true] {
-  visibility: hidden;
+.page-flexbox-wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

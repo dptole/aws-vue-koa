@@ -59,5 +59,15 @@
     );
   }
 
+  function importComponent(component_url) {
+    var component_full_url = '/components/' + component_url + '.js';
+    return function() {
+      return importScripts([component_full_url]).then(function() {
+        return Vue.component(component_url.replace(/^[^\/]+\//, ''));
+      });
+    }
+  }
+
+  window.importComponent = importComponent;
   window.importScripts = importScripts;
 }()
