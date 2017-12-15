@@ -1,15 +1,32 @@
 
 @media (min-width: 600px) {
-  .app-login-form {
+  .avk-login {
     width: 500px;
   }
 }
 
 @media (min-width: 800px) {
+  .avk-login {
+    width: 700px;
+  }
 }
 
 @media (min-width: 1000px) {
 }
 
 @media (min-width: 1200px) {
+}
+
+.avk-login {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.loader-wrapper {
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
 }

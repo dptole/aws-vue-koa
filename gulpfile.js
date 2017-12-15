@@ -26,6 +26,26 @@ const vue_router_path = {
   production: 'node_modules/vue-router/dist/vue-router.min.js'
 }
 
+const materialize_js_path = {
+  dev: 'node_modules/materialize-css/dist/js/materialize.js',
+  production: 'node_modules/materialize-css/dist/js/materialize.min.js'
+}
+
+const materialize_css_path = {
+  dev: 'node_modules/materialize-css/dist/css/materialize.css',
+  production: 'node_modules/materialize-css/dist/css/materialize.min.css'
+}
+
+const materialize_font_path = {
+  dev: 'node_modules/materialize-css/dist/fonts/**/*',
+  production: 'node_modules/materialize-css/dist/fonts/**/*'
+}
+
+const jquery_path = {
+  dev: 'node_modules/jquery/dist/jquery.js',
+  production: 'node_modules/jquery/dist/jquery.min.js'
+}
+
 gulp.task('js', function(callback) {
   pump([
     gulp.src([build_folder + '/**/*.js']),
@@ -37,6 +57,8 @@ gulp.task('js', function(callback) {
 gulp.task('vue', function(callback) {
   pump([
     gulp.src([
+      jquery_path[NODE_ENV],
+      materialize_js_path[NODE_ENV],
       vue_path[NODE_ENV],
       vue_router_path[NODE_ENV],
       build_folder + '/js/app.js'
@@ -72,7 +94,10 @@ gulp.task('html', function(callback) {
 
 gulp.task('css', function(callback) {
   pump([
-    gulp.src(build_folder + '/**/*.css'),
+    gulp.src([
+      build_folder + '/**/*.css',
+      materialize_css_path[NODE_ENV]
+    ]),
     gulp_clean_css({keepSpecialComments: 0, processImport: false}),
     gulp_concat('css/app.css'),
     gulp.dest(build_folder)
@@ -97,10 +122,20 @@ gulp.task('copy', function(callback) {
     gulp.dest(build_folder)
   ], function() {
     pump([
-      gulp.src(build_folder + '/**/*.css'),
+      gulp.src([
+        build_folder + '/**/*.css',
+        materialize_css_path[NODE_ENV]
+      ]),
       gulp_concat('css/app.css'),
       gulp.dest(build_folder)
-    ], callback)
+    ], function() {
+      pump([
+        gulp.src([
+          materialize_font_path[NODE_ENV]
+        ]),
+        gulp.dest(build_folder + '/fonts')
+      ], callback)
+    })
   })
 })
 

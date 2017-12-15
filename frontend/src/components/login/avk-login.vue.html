@@ -1,27 +1,27 @@
 
-<div class="app-login-form">
+<div class="avk-login">
   <div class="row">
-    <form class="col s12">
+    <form class="col s12" autocomplete="off" novalidate>
       <div class="row">
         <div class="col s12">
-          <h4 class="green-text text-lighten-2">Vue.js + Koa + S3 AWS SDK</h4>
+          <h4 class="green-text text-lighten-2">Vue.js + MaterializeCSS + Koa + S3 AWS SDK</h4>
         </div>
       </div>
       
       <div class="row">
         <div class="input-field col s12">
           <i class="material-icons prefix">vpn_key</i>
-          <input type="text" v-model="access_key_id" :disabled="is_loading" class="validate">
+          <input type="text" v-model="access_key_id" :disabled="is_loading">
           <label>Access Key Id</label>
         </div>
         <div class="input-field col s12">
           <i class="material-icons prefix">vpn_key</i>
-          <input type="text" v-model="secret_access_key" :disabled="is_loading" class="validate">
+          <input type="text" v-model="secret_access_key" :disabled="is_loading">
           <label>Secret Access Key</label>
         </div>
         <div class="input-field col s12">
           <i class="material-icons prefix">pin_drop</i>
-          <input type="text" v-model="region" :disabled="is_loading" class="validate">
+          <input type="text" v-model="region" :disabled="is_loading">
           <label>Region</label>
         </div>
       </div>

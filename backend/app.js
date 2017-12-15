@@ -9,7 +9,7 @@ function backendApp(_package) {
   const http_server = new koa
   const build_folder = _package.config.folders.build
   const http_server_port = _package.config.server.http.port
-  
+  const s3_map = new Map
   const upload = multer_lib.upload({
     destination: _package.config.folders.upload
   })
@@ -26,15 +26,27 @@ function backendApp(_package) {
   http_server.use(
     koa_route.post('/api/login', async ctx => {
       if(ctx.request.body.access_key_id && ctx.request.body.secret_access_key && ctx.request.body.region) {
+        const credential_string = `${ctx.request.body.access_key_id}:${ctx.request.body.secret_access_key}:${ctx.request.body.region}`
+
+        if(s3_map.has(credential_string))
+          return ctx.body = s3_map.get(credential_string).buckets
+
         const s3_instance = s3_lib({
           accessKeyId: ctx.request.body.access_key_id,
           secretAccessKey: ctx.request.body.secret_access_key,
           region: ctx.request.body.region
         })
 
-        return s3_instance.listBuckets().then(buckets =>
+        return s3_instance.listBuckets().then(buckets => {
+          s3_map.set(
+            credential_string,
+            {
+              s3_instance,
+              buckets
+            }
+          )
           ctx.body = buckets
-        ).catch(error => {
+        }).catch(error => {
           ctx.status = 401
           ctx.body = error
         })

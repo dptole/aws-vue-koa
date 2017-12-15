@@ -31,6 +31,7 @@ Vue.component('avk-login', {
       function successResponse(response) {
         return response.json().then(function(buckets) {
           Materialize.toast('Welcome!', 2000);
+          comp.$parent._router.push({path: '/dashboard'});
         }).catch(errorResponse)
       }
       

@@ -1,18 +1,16 @@
 <!doctype html>
 <html>
   <head>
-    <title>Vue + Koa + AWS SDK</title>
+    <title>Vue.js + MaterializeCSS + Koa + AWS SDK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="https://vuejs.org/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   </head>
-  <body>
+  <body class="green darken-3">
     <noscript>Enable JavaScript to finish loading.</noscript>
 
     <div id="app" class="page-flexbox-wrapper">
-      <div v-if="!app_loaded">
+      <div class="loader-wrapper" v-if="!app_loaded">
         <div class="preloader-wrapper big active">
           <div class="spinner-layer spinner-red-only">
             <div class="circle-clipper left">
@@ -29,8 +27,6 @@
       <router-view v-if="app_loaded"></router-view>
     </div>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script src="/js/bootstrap.js"></script>
   </body>
 </html>
