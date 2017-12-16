@@ -1,0 +1,9 @@
+
+<div class="avk-buckets">
+  <div class="collection with-header">
+    <div class="collection-header">
+      <h4 class="green-text text-lighten-2">Buckets</h4>
+    </div>
+    <a v-for="bucket in buckets.Buckets" :href="bucket.vue_router_hash" class="collection-item">{{ bucket.Name }}</a>
+  </div>
+</div>

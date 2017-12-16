@@ -11,3 +11,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#app[v-page=dashboard] {
+  display: block;
+  background-color: white !important;
+}

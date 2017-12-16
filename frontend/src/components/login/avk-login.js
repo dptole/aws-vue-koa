@@ -3,23 +3,13 @@ Vue.component('avk-login', {
   template: '/* @include avk-login.vue.html */',
 
   data: function() {
-    return {
-      access_key_id: '',
-      secret_access_key: '',
-      region: '',
-      state: 'normal' // normal, loading, error
-    };
+    return this.$parent;
   },
   created: function() {
     requestAnimationFrame(function() {
       Materialize.updateTextFields();
       $('input[type=text]:eq(0)').focus();
     });
-  },
-  computed: {
-    is_loading: function() {
-      return this.state === 'loading';
-    }
   },
   methods: {
     doLogin: function() {
@@ -31,11 +21,16 @@ Vue.component('avk-login', {
       function successResponse(response) {
         return response.json().then(function(buckets) {
           Materialize.toast('Welcome!', 2000);
+          buckets.Buckets = buckets.Buckets.map(function(bucket) {
+            bucket.vue_router_hash = '/#/buckets/' + bucket.Name;
+            return bucket;
+          });
+          comp.buckets = buckets;
           comp.$parent._router.push({path: '/dashboard'});
         }).catch(errorResponse)
       }
       
-      function errorResponse(response) {
+      function errorResponse(error) {
         Materialize.toast('Error!', 2000);
       }
       

@@ -6,10 +6,10 @@
     <link rel="icon" href="https://vuejs.org/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/app.css">
   </head>
-  <body class="green darken-3">
+  <body>
     <noscript>Enable JavaScript to finish loading.</noscript>
 
-    <div id="app" class="page-flexbox-wrapper">
+    <div id="app" class="green darken-3 page-flexbox-wrapper" :v-page="app_page">
       <div class="loader-wrapper" v-if="!app_loaded">
         <div class="preloader-wrapper big active">
           <div class="spinner-layer spinner-red-only">
@@ -24,6 +24,8 @@
         </div>
       </div>
 
+      <router-view v-if="app_loaded" name="nav"></router-view>
+      <router-view v-if="app_loaded" name="side-nav"></router-view>
       <router-view v-if="app_loaded"></router-view>
     </div>
 
