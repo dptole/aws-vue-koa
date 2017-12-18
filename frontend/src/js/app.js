@@ -68,7 +68,7 @@ $(document).ready(function() {
         if(!matched.length)
           router.push('/login');
       },
-      getObjects: function(bucket, mode) {
+      listObjects: function(bucket, mode) {
         app.state = 'loading';
 
         function successResponse(response) {
@@ -100,30 +100,19 @@ $(document).ready(function() {
             bucket.prefix = ''
         }
 
-        fetch('/api/get_objects', {
-          method: 'post',
-          headers: {
-            'content-type': 'application/json; charset=utf-8'
-          },
-          body: JSON.stringify({
-            access_key_id: app.access_key_id,
-            secret_access_key: app.secret_access_key,
-            region: app.region,
-            bucket: app.$route.params.bucket,
-            max_keys: 10,
-            delimiter: '/',
+        var querystring = app.serializeQueryString([
+          ['prefix', bucket.prefix],
+          ['start_after', bucket.start_after || '']
+        ]);
 
-            prefix: bucket.prefix,
-            start_after: bucket.start_after || ''
-          })
-        }).then(function(response) {
+        fetch('/api/list_obejcts?' + querystring).then(function(response) {
           return response.status === 200
             ? successResponse(response)
             : errorResponse(response)
         }).then(cleanUpResponse);
       },
       nextPage: function() {
-        app.getObjects({
+        app.listObjects({
           prefix: app.buckets_objects.Prefix,
           start_after: [].concat(
             app.buckets_objects.CommonPrefixes.map(function(p) { return p.Prefix; }),
@@ -133,10 +122,25 @@ $(document).ready(function() {
       },
       previousPage: function() {
         app.list_start_after.pop();
-        app.getObjects({
+        app.listObjects({
           prefix: app.buckets_objects.Prefix,
           start_after: app.list_start_after.pop()
         });
+      },
+      getObject: function(content) {
+        
+      },
+      serializeQueryString: function(qs) {
+        return [
+          ['access_key_id', app.access_key_id],
+          ['secret_access_key', app.secret_access_key],
+          ['region', app.region],
+          ['bucket', app.$route.params.bucket],
+          ['max_keys', 10],
+          ['delimiter', '/'],
+        ].concat(qs).reduce(function(acc, query) {
+          return acc.concat(encodeURIComponent(query[0]) + '=' + encodeURIComponent(query[1]));
+        }, []).join('&');
       }
     }
   }).$mount('#app');

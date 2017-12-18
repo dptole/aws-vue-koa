@@ -28,20 +28,20 @@
         <li class="collection-header">
           <h4 class="green-text text-lighten-2">{{ $route.params.bucket }}/{{ buckets_objects.Prefix }}</h4>
 
-          <button v-if="buckets_objects.Prefix" class="btn" @click.prevent="getObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
+          <button v-if="buckets_objects.Prefix" class="btn" @click.prevent="listObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
         </li>
 
         <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
           <div>
             {{ content.Key }}
-            <a href="/#!" @click.prevent="getObjects({prefix: content.Key})" class="secondary-content"><i class="material-icons">file_download</i></a>
+            <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="material-icons">file_download</i></a>
           </div>
         </li>
 
         <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
             {{ comment_prefix.Prefix }}
-            <a href="/#!" @click.prevent="getObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="material-icons">visibility</i></a>
+            <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="material-icons">visibility</i></a>
           </div>
         </li>
 

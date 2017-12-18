@@ -6,6 +6,7 @@ function backendApp(_package) {
   const multer_lib = require('./libs/multer.js')
   const s3_lib = require('./libs/s3.js')
   const koa_static = require('koa-static')
+  const querystring = require('querystring')
   const http_server = new koa
   const build_folder = _package.config.folders.build
   const http_server_port = _package.config.server.http.port
@@ -20,6 +21,11 @@ function backendApp(_package) {
     const date = new Date
     console.log(date.toJSON(), 'TZ:' + date.getTimezoneOffset(), ctx.request.method, ctx.request.url)
     console.log(ctx.request.body)
+    return next()
+  })
+
+  http_server.use((ctx, next) => {
+    ctx.query = querystring.parse(ctx.querystring)
     return next()
   })
 
@@ -53,16 +59,16 @@ function backendApp(_package) {
   )
 
   http_server.use(
-    koa_route.post('/api/get_objects', ctx => {
+    koa_route.get('/api/list_obejcts', ctx => {
       if(!(
-        'access_key_id' in ctx.request.body &&
-        'secret_access_key' in ctx.request.body &&
-        'region' in ctx.request.body &&
-        'bucket' in ctx.request.body &&
-        'max_keys' in ctx.request.body &&
-        'prefix' in ctx.request.body &&
-        'start_after' in ctx.request.body &&
-        'delimiter' in ctx.request.body
+        'access_key_id' in ctx.query &&
+        'secret_access_key' in ctx.query &&
+        'region' in ctx.query &&
+        'bucket' in ctx.query &&
+        'max_keys' in ctx.query &&
+        'prefix' in ctx.query &&
+        'start_after' in ctx.query &&
+        'delimiter' in ctx.query
       )) {
         ctx.status = 400
         return ctx.body = {
@@ -71,17 +77,17 @@ function backendApp(_package) {
       }
 
       const s3_instance = s3_lib({
-        accessKeyId: ctx.request.body.access_key_id,
-        secretAccessKey: ctx.request.body.secret_access_key,
-        region: ctx.request.body.region
+        accessKeyId: ctx.query.access_key_id,
+        secretAccessKey: ctx.query.secret_access_key,
+        region: ctx.query.region
       })
 
       return s3_instance.listObjectsV2({
-        Bucket: ctx.request.body.bucket,
-        MaxKeys: ctx.request.body.max_keys,
-        Prefix: ctx.request.body.prefix,
-        Delimiter: ctx.request.body.delimiter,
-        StartAfter: ctx.request.body.start_after,
+        Bucket: ctx.query.bucket,
+        MaxKeys: ctx.query.max_keys,
+        Prefix: ctx.query.prefix,
+        Delimiter: ctx.query.delimiter,
+        StartAfter: ctx.query.start_after,
       }).then(objects =>
         ctx.body = objects
       ).catch(error => {

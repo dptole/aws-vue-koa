@@ -6,10 +6,7 @@ Vue.component('avk-buckets-objects', {
     return this.$parent;
   },
   created: function() {
-    var comp = this;
-    if(comp.is_loading)
-      return false;
-    comp.getObjects({
+    this.listObjects({
       prefix: ''
     });
   }
