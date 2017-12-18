@@ -47,6 +47,7 @@ $(document).ready(function() {
       buckets: null,
       // buckets objects
       buckets_objects: {},
+      list_start_after: [],
     },
     computed: {
       is_loading: function() {
@@ -66,6 +67,76 @@ $(document).ready(function() {
         var matched = router.getMatchedComponents(location);
         if(!matched.length)
           router.push('/login');
+      },
+      getObjects: function(bucket, mode) {
+        app.state = 'loading';
+
+        function successResponse(response) {
+          return response.json().then(function(buckets_objects) {
+            app.buckets_objects = buckets_objects;
+            if(bucket.start_after)
+              app.list_start_after.push(bucket.start_after);
+            else
+              app.list_start_after = [];
+          }).catch(errorResponse);
+        }
+
+        function errorResponse(error) {
+          console.log(error);
+        }
+
+        function cleanUpResponse() {
+          app.state = 'normal';
+        }
+
+        if(mode === 'previous') {
+          bucket.prefix = bucket.prefix.match(/[^\/]+/g);
+          if(bucket.prefix) {
+            bucket.prefix.pop();
+            bucket.prefix = bucket.prefix.join('/');
+            if(bucket.prefix)
+              bucket.prefix += '/';
+          } else
+            bucket.prefix = ''
+        }
+
+        fetch('/api/get_objects', {
+          method: 'post',
+          headers: {
+            'content-type': 'application/json; charset=utf-8'
+          },
+          body: JSON.stringify({
+            access_key_id: app.access_key_id,
+            secret_access_key: app.secret_access_key,
+            region: app.region,
+            bucket: app.$route.params.bucket,
+            max_keys: 10,
+            delimiter: '/',
+
+            prefix: bucket.prefix,
+            start_after: bucket.start_after || ''
+          })
+        }).then(function(response) {
+          return response.status === 200
+            ? successResponse(response)
+            : errorResponse(response)
+        }).then(cleanUpResponse);
+      },
+      nextPage: function() {
+        app.getObjects({
+          prefix: app.buckets_objects.Prefix,
+          start_after: [].concat(
+            app.buckets_objects.CommonPrefixes.map(function(p) { return p.Prefix; }),
+            app.buckets_objects.Contents.map(function(c) { return c.Key; })
+          ).pop()
+        });
+      },
+      previousPage: function() {
+        app.list_start_after.pop();
+        app.getObjects({
+          prefix: app.buckets_objects.Prefix,
+          start_after: app.list_start_after.pop()
+        });
       }
     }
   }).$mount('#app');

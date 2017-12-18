@@ -17,7 +17,7 @@ Vue.component('avk-login', {
       if(comp.is_loading)
         return false;
       comp.state = 'loading';
-      
+
       function successResponse(response) {
         return response.json().then(function(buckets) {
           Materialize.toast('Welcome!', 2000);
@@ -25,11 +25,11 @@ Vue.component('avk-login', {
           comp.$parent.$router.push('/dashboard');
         }).catch(errorResponse)
       }
-      
+
       function errorResponse(error) {
         Materialize.toast('Error!', 2000);
       }
-      
+
       function cleanUpResponse() {
         comp.state = 'normal';
       }

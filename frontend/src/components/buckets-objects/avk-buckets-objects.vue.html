@@ -26,13 +26,29 @@
     <div class="col s12">
       <ul class="collection with-header">
         <li class="collection-header">
-          <h4 class="green-text text-lighten-2">Bucket: "{{ $route.params.bucket }}"</h4>
+          <h4 class="green-text text-lighten-2">{{ $route.params.bucket }}/{{ buckets_objects.Prefix }}</h4>
+
+          <button v-if="buckets_objects.Prefix" class="btn" @click.prevent="getObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
         </li>
 
-        <li v-for="bucket in buckets.Buckets" class="collection-item">
+        <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
           <div>
-            {{ bucket.Name }}
-            <a :href="'/#/buckets/' + bucket.Name" @click.prevent="$router.push('/buckets/' + bucket.Name)" class="secondary-content"><i class="material-icons">visibility</i></a>
+            {{ content.Key }}
+            <a href="/#!" @click.prevent="getObjects({prefix: content.Key})" class="secondary-content"><i class="material-icons">file_download</i></a>
+          </div>
+        </li>
+
+        <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
+          <div>
+            {{ comment_prefix.Prefix }}
+            <a href="/#!" @click.prevent="getObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="material-icons">visibility</i></a>
+          </div>
+        </li>
+
+        <li v-if="buckets_objects.IsTruncated || list_start_after.length" class="collection-item">
+          <div class="row">
+            <button v-if="list_start_after.length" class="btn left" @click.prevent="previousPage()"><i class="material-icons">navigate_before</i></button>
+            <button v-if="buckets_objects.IsTruncated" class="btn right" @click.prevent="nextPage()"><i class="material-icons">navigate_next</i></button>
           </div>
         </li>
       </ul>

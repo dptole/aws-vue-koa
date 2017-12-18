@@ -7,6 +7,10 @@ Vue.component('avk-buckets-objects', {
   },
   created: function() {
     var comp = this;
-    comp.state = 'loading';
+    if(comp.is_loading)
+      return false;
+    comp.getObjects({
+      prefix: ''
+    });
   }
 })
