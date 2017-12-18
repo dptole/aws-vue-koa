@@ -60,11 +60,18 @@
   }
 
   function importComponent(component_url) {
-    var component_full_url = '/components/' + component_url + '.js';
+    var component_full_url = '/components/' + component_url + '.js'
+      , vue_component_name = component_url.replace(/^[^\/]+\//, '')
+    ;
+
     return function() {
-      return importScripts([component_full_url]).then(function() {
-        return Vue.component(component_url.replace(/^[^\/]+\//, ''));
-      });
+      var vue_component = Vue.component(vue_component_name);
+      return vue_component
+        ? Promise.resolve(vue_component)
+        : importScripts([component_full_url]).then(function() {
+            return Vue.component(vue_component_name);
+          })
+      ;
     }
   }
 

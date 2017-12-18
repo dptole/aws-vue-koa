@@ -21,12 +21,8 @@ Vue.component('avk-login', {
       function successResponse(response) {
         return response.json().then(function(buckets) {
           Materialize.toast('Welcome!', 2000);
-          buckets.Buckets = buckets.Buckets.map(function(bucket) {
-            bucket.vue_router_hash = '/#/buckets/' + bucket.Name;
-            return bucket;
-          });
           comp.buckets = buckets;
-          comp.$parent._router.push({path: '/dashboard'});
+          comp.$parent.$router.push('/dashboard');
         }).catch(errorResponse)
       }
       
@@ -37,7 +33,7 @@ Vue.component('avk-login', {
       function cleanUpResponse() {
         comp.state = 'normal';
       }
-      
+
       fetch('/api/login', {
         method: 'post',
         headers: {

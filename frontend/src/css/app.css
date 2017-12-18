@@ -12,7 +12,7 @@ body {
   align-items: center;
 }
 
-#app[v-page=dashboard] {
+#app:not([v-page=login]) {
   display: block;
   background-color: white !important;
 }

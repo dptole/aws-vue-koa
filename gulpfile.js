@@ -73,7 +73,7 @@ gulp.task('preprocess-vue', function(callback) {
   pump([
     gulp.src(build_folder + '/**/*.vue.html'),
     gulp_htmlmin({collapseWhitespace: true}),
-    gulp_replace('"', '\\"'),
+    gulp_replace(/('|")/g, '\\$&'),
     gulp.dest(build_folder)
   ], callback)
 })

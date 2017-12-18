@@ -17,12 +17,19 @@ $(document).ready(function() {
         default: importComponent('buckets/avk-buckets'),
         nav: importComponent('nav/avk-nav')
       }
+    }, {
+      name: 'buckets-objects',
+      path: '/buckets/:bucket',
+      components: {
+        default: importComponent('buckets-objects/avk-buckets-objects'),
+        nav: importComponent('nav/avk-nav')
+      }
     }]
   });
 
   router.afterEach(function(to, from) {
-    app.app_page = to.name;
-    app.goToLoginIfUnknownPath();
+    router.app.app_page = to.name;
+    router.app.goToLoginIfUnknownPath();
   });
 
   var app = new Vue({
@@ -37,7 +44,9 @@ $(document).ready(function() {
       secret_access_key: '',
       region: '',
       // dashboard
-      buckets: null
+      buckets: null,
+      // buckets objects
+      buckets_objects: {},
     },
     computed: {
       is_loading: function() {
@@ -49,6 +58,10 @@ $(document).ready(function() {
       this.app_loaded = true;
     },
     methods: {
+      goToDashboard: function() {
+        if(!this.is_loading)
+          this.$router.push('/dashboard');
+      },
       goToLoginIfUnknownPath: function() {
         var matched = router.getMatchedComponents(location);
         if(!matched.length)

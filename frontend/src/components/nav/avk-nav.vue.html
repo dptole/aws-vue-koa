@@ -1,9 +1,10 @@
 
-<div class="avk-nav">
+<div class="avk-nav row">
   <nav class="green darken-3">
     <div class="nav-wrapper">
+      <a @click.prevent="goToDashboard()" href="#" class="brand-logo">AVK</a>
       <ul class="right">
-        <li><a href="/#/logout">Logout</a></li>
+        <li v-if="!is_loading"><a href="/#/logout"><i class="material-icons">power_settings_new</i></a></li>
       </ul>
     </div>
   </nav>
