@@ -69,11 +69,30 @@ $(document).ready(function() {
           router.push('/login');
       },
       listObjects: function(bucket, mode) {
+        if(app.is_loading)
+          return false;
         app.state = 'loading';
 
         function successResponse(response) {
           return response.json().then(function(buckets_objects) {
+            var root = new String(app.$route.params.bucket);
+            root.breadcrumbs = '';
+
             app.buckets_objects = buckets_objects;
+            app.buckets_objects.prefix_array = app.buckets_objects.Prefix.split('/').filter(function(identity) {
+              return identity;
+            });
+
+            app.buckets_objects.prefix_array = [
+              root
+            ].concat(
+              app.buckets_objects.prefix_array.reduce(function(acc, prefix) {
+                var pref = new String(prefix);
+                acc.push(pref);
+                pref.breadcrumbs = acc.join('/') + '/';
+                return acc;
+              }, [])
+            );
             if(bucket.start_after)
               app.list_start_after.push(bucket.start_after);
             else
@@ -101,11 +120,14 @@ $(document).ready(function() {
         }
 
         var querystring = app.serializeQueryString([
+          ['bucket', app.$route.params.bucket],
+          ['max_keys', 10],
+          ['delimiter', '/'],
           ['prefix', bucket.prefix],
           ['start_after', bucket.start_after || '']
         ]);
 
-        fetch('/api/list_obejcts?' + querystring).then(function(response) {
+        fetch('/api/list_objects?' + querystring).then(function(response) {
           return response.status === 200
             ? successResponse(response)
             : errorResponse(response)
@@ -128,16 +150,18 @@ $(document).ready(function() {
         });
       },
       getObject: function(content) {
-        
+        var querystring = app.serializeQueryString([
+          ['bucket', app.$route.params.bucket],
+          ['key', content.Key]
+        ]);
+
+        window.open('/api/get_object/' + content.Key + '?' + querystring);
       },
       serializeQueryString: function(qs) {
         return [
           ['access_key_id', app.access_key_id],
           ['secret_access_key', app.secret_access_key],
-          ['region', app.region],
-          ['bucket', app.$route.params.bucket],
-          ['max_keys', 10],
-          ['delimiter', '/'],
+          ['region', app.region]
         ].concat(qs).reduce(function(acc, query) {
           return acc.concat(encodeURIComponent(query[0]) + '=' + encodeURIComponent(query[1]));
         }, []).join('&');

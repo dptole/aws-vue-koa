@@ -26,22 +26,32 @@
     <div class="col s12">
       <ul class="collection with-header">
         <li class="collection-header">
-          <h4 class="green-text text-lighten-2">{{ $route.params.bucket }}/{{ buckets_objects.Prefix }}</h4>
+          <h4 class="green-text text-lighten-2 break-word">
+            <span v-for="prefix in buckets_objects.prefix_array" class="clickable" @click="listObjects({prefix: prefix.breadcrumbs})">
+              {{ prefix.valueOf() }}/
+            </span>
+          </h4>
 
           <button v-if="buckets_objects.Prefix" class="btn" @click.prevent="listObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
         </li>
 
         <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
           <div>
-            {{ content.Key }}
+            {{ content.Key.replace(buckets_objects.Prefix, '') }}
             <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="material-icons">file_download</i></a>
           </div>
         </li>
 
         <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
-            {{ comment_prefix.Prefix }}
+            {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
             <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="material-icons">visibility</i></a>
+          </div>
+        </li>
+
+        <li v-if="buckets_objects.Contents.concat(buckets_objects.CommonPrefixes).length < 1" class="collection-item">
+          <div>
+            This object is empty.
           </div>
         </li>
 

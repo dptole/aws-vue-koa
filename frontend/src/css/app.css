@@ -16,3 +16,11 @@ body {
   display: block;
   background-color: white !important;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.break-word {
+  word-wrap: break-word;
+}

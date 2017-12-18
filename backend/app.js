@@ -17,7 +17,7 @@ function backendApp(_package) {
   http_server.use(koa_json_body({limit: '1kb', fallback: true}))
 
   http_server.use((ctx, next) => {
-    ctx.response.header['content-type'] = 'application/json;charset=utf-8'
+    ctx.set('content-type', 'application/json;charset=utf-8')
     const date = new Date
     console.log(date.toJSON(), 'TZ:' + date.getTimezoneOffset(), ctx.request.method, ctx.request.url)
     console.log(ctx.request.body)
@@ -59,7 +59,7 @@ function backendApp(_package) {
   )
 
   http_server.use(
-    koa_route.get('/api/list_obejcts', ctx => {
+    koa_route.get('/api/list_objects', ctx => {
       if(!(
         'access_key_id' in ctx.query &&
         'secret_access_key' in ctx.query &&
@@ -91,6 +91,42 @@ function backendApp(_package) {
       }).then(objects =>
         ctx.body = objects
       ).catch(error => {
+        console.log(error)
+        ctx.status = 401
+        ctx.body = error
+      })
+    })
+  )
+
+  http_server.use(
+    koa_route.get(/\/api\/get_object\/(.*)/, ctx => {
+      if(!(
+        'access_key_id' in ctx.query &&
+        'secret_access_key' in ctx.query &&
+        'region' in ctx.query &&
+        'bucket' in ctx.query &&
+        'key' in ctx.query
+      )) {
+        ctx.status = 400
+        return ctx.body = {
+          error: 'bad request'
+        }
+      }
+
+      const s3_instance = s3_lib({
+        accessKeyId: ctx.query.access_key_id,
+        secretAccessKey: ctx.query.secret_access_key,
+        region: ctx.query.region
+      })
+
+      return s3_instance.getObject({
+        Bucket: ctx.query.bucket,
+        Key: ctx.query.key
+      }).then(object => {
+        console.log(object)
+        ctx.body = object.Body
+        ctx.set('content-type', object.ContentType)
+      }).catch(error => {
         console.log(error)
         ctx.status = 401
         ctx.body = error
