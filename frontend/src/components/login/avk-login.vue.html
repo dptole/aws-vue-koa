@@ -28,7 +28,7 @@
       
       <div class="row">
         <div class="col s12">
-          <button class="btn col s12" :disabled="is_loading" @click.prevent="doLogin()">
+          <button class="btn col s12 green" :disabled="is_loading" @click.prevent="doLogin()">
             <span v-if="!is_loading">Login</span>
 
             <div v-if="is_loading" class="preloader-wrapper small active">

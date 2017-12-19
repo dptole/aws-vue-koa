@@ -18,7 +18,7 @@
 
   <div v-else class="row">
     <div class="col s12">
-      <button class="btn" :disabled="is_loading" @click.prevent="$router.go(-1)">
+      <button class="btn green" :disabled="is_loading" @click.prevent="$router.go(-1)">
         <i class="material-icons">keyboard_backspace</i>
       </button>
     </div>
@@ -32,7 +32,7 @@
             </span>
           </h4>
 
-          <button v-if="buckets_objects.Prefix" class="btn" @click.prevent="listObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
+          <button v-if="buckets_objects.Prefix" class="btn green" @click.prevent="listObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
         </li>
 
         <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
@@ -49,16 +49,16 @@
           </div>
         </li>
 
-        <li v-if="buckets_objects.Contents.concat(buckets_objects.CommonPrefixes).length < 1" class="collection-item">
+        <li v-if="buckets_objects.Contents.length &lt; 2 &amp;&amp; buckets_objects.CommonPrefixes.length &lt; 1" class="collection-item">
           <div>
-            This object is empty.
+            <h4>This object is empty.</h4>
           </div>
         </li>
 
         <li v-if="buckets_objects.IsTruncated || list_start_after.length" class="collection-item">
           <div class="row">
-            <button v-if="list_start_after.length" class="btn left" @click.prevent="previousPage()"><i class="material-icons">navigate_before</i></button>
-            <button v-if="buckets_objects.IsTruncated" class="btn right" @click.prevent="nextPage()"><i class="material-icons">navigate_next</i></button>
+            <button v-if="list_start_after.length" class="btn left green" @click.prevent="previousPage()"><i class="material-icons">navigate_before</i></button>
+            <button v-if="buckets_objects.IsTruncated" class="btn right green" @click.prevent="nextPage()"><i class="material-icons">navigate_next</i></button>
           </div>
         </li>
       </ul>

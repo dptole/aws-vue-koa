@@ -20,6 +20,7 @@
 .avk-login {
   background-color: white;
   border-radius: 10px;
+  box-shadow: black 0px 0px 20px 0px;
 }
 
 .loader-wrapper {
