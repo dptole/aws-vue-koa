@@ -7,9 +7,7 @@ $(document).ready(function() {
     }, {
       name: 'logout',
       path: '/logout',
-      beforeEnter: function(to, from, next) {
-        next('/login')
-      }
+      redirect: '/login'
     }, {
       name: 'dashboard',
       path: '/dashboard',
@@ -25,11 +23,6 @@ $(document).ready(function() {
         nav: importComponent('nav/avk-nav')
       }
     }]
-  });
-
-  router.afterEach(function(to, from) {
-    router.app.app_page = to.name;
-    router.app.goToLoginIfUnknownPath();
   });
 
   var app = new Vue({
@@ -168,6 +161,12 @@ $(document).ready(function() {
       }
     }
   }).$mount('#app');
+
+  router.afterEach(function(to, from) {
+    router.app.app_page = to.name;
+    router.app.goToLoginIfUnknownPath();
+    $('.button-collapse').sideNav('hide');
+  });
 
   // Bugfix: if the hash does not start with "#/" vue-router will not process it properly.
   window.addEventListener('hashchange', function(event) {

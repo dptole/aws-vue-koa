@@ -4,5 +4,10 @@ Vue.component('avk-nav', {
 
   data: function() {
     return this.$parent;
+  },
+  created: function() {
+    requestAnimationFrame(function() {
+      $('.button-collapse').sideNav();
+    });
   }
 })

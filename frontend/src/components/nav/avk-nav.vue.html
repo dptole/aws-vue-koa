@@ -1,10 +1,42 @@
 
 <div class="avk-nav row">
+  <ul v-if="!is_loading" id="sidenav_menu" class="side-nav">
+    <li>
+      <div class="user-view">
+        <span>Hi {{ buckets.Owner.DisplayName }}!</span>
+      </div>
+    </li>
+    <li>
+      <a href="/#/upload">
+        <i class="material-icons">cloud_upload</i>
+        Upload
+      </a>
+    </li>
+    <li><div class="divider"></div></li>
+    <li>
+      <a href="/#/logout">
+        <i class="material-icons">power_settings_new</i>
+        Logout
+      </a>
+    </li>
+  </ul>
+
   <nav class="orange lighten-1">
     <div class="nav-wrapper">
-      <a @click.prevent="goToDashboard()" href="#" class="brand-logo">AVK</a>
-      <ul class="right">
-        <li v-if="!is_loading"><a href="/#/logout"><i class="material-icons">power_settings_new</i></a></li>
+      <ul v-if="!is_loading" id="nav-mobile" class="left hide-on-med-and-down">
+        <li>
+          <a href="/#/upload"><i class="material-icons">cloud_upload</i></a>
+        </li>
+      </ul>
+
+      <a href="#" v-if="!is_loading" data-activates="sidenav_menu" class="button-collapse"><i class="material-icons">menu</i></a>
+
+      <a href="#" @click.prevent="goToDashboard()" class="brand-logo center">AVK</a>
+
+      <ul v-if="!is_loading" id="nav-mobile" class="right hide-on-med-and-down">
+        <li>
+          <a href="/#/logout"><i class="material-icons">power_settings_new</i></a>
+        </li>
       </ul>
     </div>
   </nav>
