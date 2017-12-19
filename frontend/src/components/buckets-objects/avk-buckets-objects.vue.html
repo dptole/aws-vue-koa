@@ -1,22 +1,6 @@
 
 <div class="avk-buckets-objects">
-  <div v-if="is_loading" class="page-flexbox-wrapper">
-    <div class="loader-wrapper">
-      <div class="preloader-wrapper big active">
-        <div class="spinner-layer spinner-red-only">
-          <div class="circle-clipper left">
-            <div class="circle"></div>
-          </div><div class="gap-patch">
-            <div class="circle"></div>
-          </div><div class="circle-clipper right">
-            <div class="circle"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div v-else class="row">
+  <div class="row" :v-css-loading="is_loading" v-if="buckets_objects">
     <div class="col s12">
       <button class="btn green" :disabled="is_loading" @click.prevent="$router.go(-1)">
         <i class="material-icons">keyboard_backspace</i>
@@ -31,8 +15,6 @@
               {{ prefix.valueOf() }}/
             </span>
           </h4>
-
-          <button v-if="buckets_objects.Prefix" class="btn green" @click.prevent="listObjects({prefix: buckets_objects.Prefix}, 'previous')"><i class="material-icons">keyboard_return</i></button>
         </li>
 
         <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
@@ -62,6 +44,22 @@
           </div>
         </li>
       </ul>
+    </div>
+  </div>
+
+  <div v-if="is_loading" class="page-flexbox-wrapper">
+    <div class="loader-wrapper">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-red-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div><div class="gap-patch">
+            <div class="circle"></div>
+          </div><div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

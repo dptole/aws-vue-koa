@@ -46,7 +46,7 @@ $(document).ready(function() {
       // dashboard
       buckets: null,
       // buckets objects
-      buckets_objects: {},
+      buckets_objects: null,
       list_start_after: [],
     },
     computed: {

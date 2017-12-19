@@ -1,0 +1,12 @@
+
+.avk-buckets-objects {
+  position: relative;
+}
+
+[v-css-loading=true] {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+  opacity: 0.4;
+}
+
