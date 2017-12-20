@@ -24,6 +24,12 @@
 
         <li v-if="files_to_upload.length &gt; 0" v-for="file_to_upload in files_to_upload" class="collection-item">
           <div>
+            <span class="right">
+              <i class="green-text material-icons" v-if="file_to_upload.status === 'uploaded'">done</i>
+              <i class="red-text material-icons" v-else-if="file_to_upload.status === 'error'">clear</i>
+              <i class="grey-text material-icons" v-else>more_horiz</i>
+            </span>
+
             {{ file_to_upload.file_object.name }}
             <a href="/#!" @click.prevent="removeFilesFromUploadList(file_to_upload)" class="secondary-content"><i class="material-icons">clear</i></a>
           </div>
@@ -32,7 +38,7 @@
     </div>
 
     <div class="col s12" v-if="files_to_upload.length &gt; 0">
-      <div class="input-field">
+      <div class="input-field col s12">
         <select v-model="selected_acl" :disabled="is_loading">
           <option v-for="acl, key in acl_options">{{ acl }}</option>
         </select>

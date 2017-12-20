@@ -28,6 +28,7 @@
           <div v-else>
             {{ content.Key.replace(buckets_objects.Prefix, '') }}
             <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
+            <a href="/#!" @click.prevent="modalDeleteObject(buckets_objects, content)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
           </div>
         </li>
 
@@ -67,6 +68,17 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="modal_delete_object" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Delete file</h4>
+      <p>Are you sure to delete "{{ deleting.bucket &amp;&amp; deleting.bucket.Name }}/{{ deleting.object &amp;&amp; deleting.object.Key }}"?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" @click.prevent class="modal-action modal-close btn green">Cancel</a>
+      <a href="#!" @click.prevent="deleteObject()" data-trigger="delete" class="modal-action waves-effect waves-red btn red">Delete</a>
     </div>
   </div>
 </div>

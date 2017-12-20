@@ -56,6 +56,8 @@ $(document).ready(function() {
       // buckets objects
       buckets_objects: null,
       list_start_after: [],
+      // delete
+      deleting: {},
       // upload
       files_to_upload: [],
       selected_acl: 'public-read',
