@@ -10,7 +10,7 @@
         <li v-for="bucket in buckets.Buckets" class="collection-item">
           <div>
             {{ bucket.Name }}
-            <a :href="'/#/buckets/' + bucket.Name" @click.prevent="$router.push('/buckets/' + bucket.Name)" class="secondary-content"><i class="material-icons">visibility</i></a>
+            <a :href="'/#/buckets/' + bucket.Name" @click.prevent="$router.push('/buckets/' + bucket.Name)" class="secondary-content"><i class="material-icons green-text">visibility</i></a>
           </div>
         </li>
       </ul>

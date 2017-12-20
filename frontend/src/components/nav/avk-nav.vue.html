@@ -1,20 +1,31 @@
 
 <div class="avk-nav row">
-  <ul v-if="!is_loading" id="sidenav_menu" class="side-nav">
+  <ul id="sidenav_menu" class="side-nav">
     <li>
       <div class="user-view">
         <span>Hi {{ buckets.Owner.DisplayName }}!</span>
       </div>
     </li>
+
+    <li><div class="divider"></div></li>
+
     <li>
-      <a href="/#/upload">
+      <a href="/#/dashboard" @click.prevent="navbarGoTo('/dashboard')">
+        <i class="material-icons">archive</i>
+        Buckets
+      </a>
+    </li>
+    <li v-show="buckets_objects">
+      <a href="/#/upload" @click.prevent="navbarGoTo('/upload')">
         <i class="material-icons">cloud_upload</i>
         Upload
       </a>
     </li>
+
     <li><div class="divider"></div></li>
+
     <li>
-      <a href="/#/logout">
+      <a href="/#/logout" @click.prevent="navbarGoTo('/logout')">
         <i class="material-icons">power_settings_new</i>
         Logout
       </a>
@@ -23,15 +34,18 @@
 
   <nav class="orange lighten-1">
     <div class="nav-wrapper">
-      <ul v-if="!is_loading" id="nav-mobile" class="left hide-on-med-and-down">
-        <li>
+      <a href="#" v-if="!is_loading" data-activates="sidenav_menu" class="button-collapse"><i class="material-icons">menu</i></a>
+
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <li v-show="buckets_objects">
           <a href="/#/upload"><i class="material-icons">cloud_upload</i></a>
+        </li>
+        <li v-show="buckets_objects">
+          <a href="/#" @click.prevent=""><i class="material-icons">archive</i></a>
         </li>
       </ul>
 
-      <a href="#" v-if="!is_loading" data-activates="sidenav_menu" class="button-collapse"><i class="material-icons">menu</i></a>
-
-      <a href="#" @click.prevent="goToDashboard()" class="brand-logo center">AVK</a>
+      <a href="#" @click.prevent.stop="goToDashboard()" class="brand-logo center">AVK</a>
 
       <ul v-if="!is_loading" id="nav-mobile" class="right hide-on-med-and-down">
         <li>

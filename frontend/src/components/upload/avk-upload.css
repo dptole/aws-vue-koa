@@ -1,0 +1,26 @@
+
+.avk-upload {
+  position: relative;
+}
+
+.avk-big-block-upload input[type=file] {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  opacity: 0;
+  left: 0px;
+  top: 0px;
+  height: 54px;
+  cursor: pointer;
+}
+
+.avk-big-block-upload .btn-large {
+  position: relative;
+}
+
+.avk-big-block-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}

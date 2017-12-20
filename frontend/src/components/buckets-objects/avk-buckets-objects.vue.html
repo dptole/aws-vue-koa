@@ -5,6 +5,9 @@
       <button class="btn green" :disabled="is_loading" @click.prevent="$router.go(-1)">
         <i class="material-icons">keyboard_backspace</i>
       </button>
+      <a class="btn green" :disabled="is_loading" href="/#/upload">
+        <i class="material-icons">cloud_upload</i>
+      </a>
     </div>
 
     <div class="col s12">
@@ -17,23 +20,27 @@
           </h4>
         </li>
 
-        <li v-for="content in buckets_objects.Contents" v-if="buckets_objects.Prefix !== content.Key" class="collection-item">
-          <div>
+        <li v-for="content in buckets_objects.Contents" class="collection-item">
+          <div v-if="buckets_objects.Prefix === content.Key">
+            .
+            <a href="/#!" @click.prevent="listObjects({prefix: buckets_objects.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
+          </div>
+          <div v-else>
             {{ content.Key.replace(buckets_objects.Prefix, '') }}
-            <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="material-icons">file_download</i></a>
+            <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
           </div>
         </li>
 
         <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
             {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
-            <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="material-icons">visibility</i></a>
+            <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
           </div>
         </li>
 
-        <li v-if="buckets_objects.Contents.length &lt; 2 &amp;&amp; buckets_objects.CommonPrefixes.length &lt; 1" class="collection-item">
+        <li v-if="buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length === 1 &amp;&amp; buckets_objects.Contents[0].Key === buckets_objects.Prefix" class="collection-item">
           <div>
-            <h4>This object is empty.</h4>
+            <h4>This folder is empty.</h4>
           </div>
         </li>
 

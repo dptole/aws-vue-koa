@@ -17,15 +17,20 @@ function backendApp(_package) {
   http_server.use(koa_json_body({limit: '1kb', fallback: true}))
 
   http_server.use((ctx, next) => {
-    ctx.set('content-type', 'application/json;charset=utf-8')
-    const date = new Date
-    console.log(date.toJSON(), 'TZ:' + date.getTimezoneOffset(), ctx.request.method, ctx.request.url)
-    console.log(ctx.request.body)
+    ctx.query = querystring.parse(ctx.querystring)
     return next()
   })
 
   http_server.use((ctx, next) => {
-    ctx.query = querystring.parse(ctx.querystring)
+    ctx.set('content-type', 'application/json;charset=utf-8')
+    const date = new Date
+    console.log(date.toJSON(), 'TZ:' + date.getTimezoneOffset(), ctx.request.method, ctx.request.url)
+    console.log(
+      JSON.stringify({
+        payload: ctx.request.body,
+        querystring: ctx.query
+      }, 0, 2)
+    )
     return next()
   })
 

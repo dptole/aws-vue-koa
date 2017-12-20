@@ -4,5 +4,8 @@ Vue.component('avk-buckets', {
 
   data: function() {
     return this.$parent;
+  },
+  created: function() {
+    this.buckets_objects = null;
   }
 })

@@ -1,0 +1,65 @@
+
+<div class="avk-upload">
+  <div class="row" :v-css-loading="is_loading" v-if="buckets_objects">
+    <div class="col s12">
+      <button class="btn green" :disabled="is_loading" @click.prevent="$router.go(-1)">
+        <i class="material-icons">keyboard_backspace</i>
+      </button>
+
+      <ul class="collection with-header">
+        <li class="collection-header">
+          <h4 class="green-text text-lighten-2 break-word">
+            <span v-for="prefix in buckets_objects.prefix_array">
+              {{ prefix.valueOf() }}/
+            </span>
+          </h4>
+        </li>
+
+        <li class="collection-item avk-big-block-upload" v-if="files_to_upload.length &lt; 1">
+          <a class="waves-effect waves-light btn-large green">
+            <i class="material-icons left">cloud_upload</i> Select files
+            <input multiple  type="file" @change="listFilesToUpload" class="green">
+          </a>
+        </li>
+
+        <li v-if="files_to_upload.length &gt; 0" v-for="file_to_upload in files_to_upload" class="collection-item">
+          <div>
+            {{ file_to_upload.file_object.name }}
+            <a href="/#!" @click.prevent="removeFilesFromUploadList(file_to_upload)" class="secondary-content"><i class="material-icons">clear</i></a>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col s12" v-if="files_to_upload.length &gt; 0">
+      <div class="input-field">
+        <select v-model="selected_acl" :disabled="is_loading">
+          <option v-for="acl, key in acl_options">{{ acl }}</option>
+        </select>
+        <label>ACL</label>
+      </div>
+    </div>
+
+    <div class="col s12" v-if="files_to_upload.length &gt; 0">
+      <a class="btn green right" @click="uploadFiles()" :disabled="is_loading" v-if="files_to_upload.length &gt; 0">
+        <i class="material-icons left">cloud_upload</i> Upload
+      </a>
+    </div>
+  </div>
+
+  <div v-if="is_loading" class="page-flexbox-wrapper">
+    <div class="loader-wrapper">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-red-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div><div class="gap-patch">
+            <div class="circle"></div>
+          </div><div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
