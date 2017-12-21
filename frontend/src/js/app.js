@@ -313,6 +313,7 @@ $(document).ready(function() {
     router.app.goToLoginIfUnknownPath();
   });
 
+  dragndrop_layer.ondragleave =
   document.documentElement.onmouseover = function(event) {
     app.app_dragover = 'false';
   };

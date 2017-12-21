@@ -96,7 +96,6 @@
     </a>
     <ul v-show="is_normal_mode">
       <li><a v-if="containFiles()" class="btn-floating red" @click.prevent="deleteMode()"><i class="material-icons">delete</i></a></li>
-      <li><a class="btn-floating purple" @click.prevent="navbarGoTo('/logout')"><i class="material-icons">power_settings_new</i></a></li>
       <li><a class="btn-floating orange" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a></li>
       <li><a class="btn-floating green" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a></li>
     </ul>
