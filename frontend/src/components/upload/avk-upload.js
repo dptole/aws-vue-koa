@@ -6,14 +6,20 @@ Vue.component('avk-upload', {
     return this.$parent;
   },
   created: function() {
-    this.files_to_upload = [];
+    var comp = this;
+
+    document.documentElement.ondrop = function(event) {
+      event.preventDefault();
+      comp.listDropToUpload(event);
+    };
+
+    if(comp.files_to_upload.length > 0)
+      comp.startMaterialSelect();
   },
   watch: {
     files_to_upload: function(new_value, old_value) {
       if(new_value.length > 0 && old_value.length < 1)
-        requestAnimationFrame(function() {
-          $('select').material_select();
-        });
+        this.startMaterialSelect();
     }
   },
   methods: {
@@ -46,6 +52,8 @@ Vue.component('avk-upload', {
       function uploadIter(files, index) {
         if(!files[index]) {
           Materialize.toast('Done', 2e3);
+          comp.files_to_upload = [];
+
           return setTimeout(function() {
             comp.state = 'normal';
             comp.$router.go(-1);
@@ -82,6 +90,9 @@ Vue.component('avk-upload', {
       var file_index = this.files_to_upload.indexOf(file);
       if(~file_index)
         this.files_to_upload.splice(file_index, 1);
+    },
+    resetFiles: function() {
+      this.files_to_upload = [];
     },
     uploadObject: function(bucket, file, acl) {
       var comp = this

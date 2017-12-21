@@ -55,6 +55,7 @@ $(document).ready(function() {
       buckets: null,
       // buckets objects
       buckets_objects: null,
+
       list_start_after: [],
       // delete
       deleting: {},
@@ -81,6 +82,11 @@ $(document).ready(function() {
       this.app_loaded = true;
     },
     methods: {
+      startMaterialSelect: function() {
+        requestAnimationFrame(function() {
+            $('select').material_select();
+        });
+      },
       navbarGoTo: function(url) {
         if(this.is_loading)
           return false;
@@ -93,6 +99,7 @@ $(document).ready(function() {
         this.$router.push('/dashboard');
       },
       goToLoginIfUnknownPath: function() {
+        return;
         var matched = router.getMatchedComponents(location);
         if(!matched.length)
           router.push('/login');
@@ -194,11 +201,86 @@ $(document).ready(function() {
         ].concat(qs).reduce(function(acc, query) {
           return acc.concat(encodeURIComponent(query[0]) + '=' + encodeURIComponent(query[1]));
         }, []).join('&');
+      },
+      readEntries: function(entries) {
+        var acc = [];
+        return entries.reduce(function(promise, entry) {
+          return promise.then(function() {
+            return app.readEntry(entry).then(function(file_objects) {
+              return acc = acc.concat(file_objects);
+            });
+          });
+        }, Promise.resolve());
+      },
+      readEntry: function(entry) {
+        return new Promise(function(resolve, reject) {
+          var left_to_read = 1
+            , files = []
+          ;
+
+          function filesPushCallback(entry, file, error) {
+            files.push({
+              filename: entry.fullPath.replace(/^\//, ''),
+              file: file,
+              error: error
+            });
+
+            if(left_to_read < 1)
+              resolve(files);
+          }
+
+          function readEntryIter(entry, callback) {
+            if(entry.isDirectory) {
+              entry.createReader().readEntries(function(entries) {
+                left_to_read += entries.length - 1;
+                for(var i = 0; i < entries.length; i++)
+                  readEntryIter(entries[i], callback);
+              }, function(error) {
+                left_to_read--;
+                callback(entry, null, error);
+              });
+            } else if(entry.isFile) {
+              entry.file(function(file) {
+                left_to_read--;
+                callback(entry, file, null);
+              });
+            }
+          }
+
+          readEntryIter(entry, filesPushCallback);
+        });
+      },
+      listDropToUpload: function(event) {
+        var entries = Array.from(event.dataTransfer.items).map(function(item, index) {
+          return item.webkitGetAsEntry();
+        });
+
+        return app.readEntries(entries).then(function(file_objects) {
+          return app.files_to_upload = file_objects.map(function(file_object) {
+            return {
+              filename: file_object.filename,
+              file_object: file_object.file,
+              status: 'waiting'
+            }
+          });
+        });
       }
     }
   }).$mount('#app');
 
   router.afterEach(function(to, from) {
+    if(from.name === 'upload')
+      app.files_to_upload = [];
+
+    document.documentElement.ondragover = function(event) {
+      event.preventDefault();
+    };
+
+    document.documentElement.ondrop = function(event) {
+      event.preventDefault();
+      $('#modal_drop_object').modal('open');
+    };
+
     router.app.state = 'normal';
     router.app.app_page = to.name;
     router.app.goToLoginIfUnknownPath();

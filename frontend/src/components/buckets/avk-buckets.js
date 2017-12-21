@@ -7,5 +7,9 @@ Vue.component('avk-buckets', {
   },
   created: function() {
     this.buckets_objects = null;
+
+    requestAnimationFrame(function() {
+      $('#modal_drop_object').modal();
+    });
   }
 })

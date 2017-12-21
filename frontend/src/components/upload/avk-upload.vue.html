@@ -65,6 +65,9 @@
       <a class="btn green right" @click="uploadFiles()" :disabled="is_loading" v-if="files_to_upload.length &gt; 0">
         <i class="material-icons left">cloud_upload</i> Upload
       </a>
+      <a class="btn-flat right" @click="resetFiles()" :disabled="is_loading" v-if="files_to_upload.length &gt; 0">
+        <i class="material-icons left">undo</i> Reset
+      </a>
     </div>
   </div>
 

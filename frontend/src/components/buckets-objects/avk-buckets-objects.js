@@ -16,6 +16,16 @@ Vue.component('avk-buckets-objects', {
       });
     });
 
+    document.documentElement.ondrop = function(event) {
+      event.preventDefault();
+      if(comp.buckets_objects) {
+        comp.navbarGoTo('/upload');
+        comp.listDropToUpload(event).then(function() {
+          comp.startMaterialSelect();
+        });
+      }
+    };
+
     if(!this.buckets_objects)
       this.listObjects({
         prefix: ''

@@ -25,10 +25,10 @@ body {
   word-wrap: break-word;
 }
 
-.collection .collection-item:not(.active):not(.avk-big-block-upload):not(.avk-empty-folder) {
+ul.hover-effect.collection .collection-item:not(.active):not(.avk-big-block-upload):not(.avk-empty-folder) {
   transition: .25s;
 }
 
-.collection .collection-item:not(.active):not(.avk-big-block-upload):not(.avk-empty-folder):hover {
+ul.hover-effect.collection .collection-item:not(.active):not(.avk-big-block-upload):not(.avk-empty-folder):hover {
   background-color: #ddd;
 }
