@@ -44,6 +44,7 @@ $(document).ready(function() {
     router: router,
     data: {
       // global
+      cache_version: '/* @echo CACHE_VERSION */',
       app_loaded: false,
       app_dragover: 'false',
       app_page: '',
@@ -91,10 +92,45 @@ $(document).ready(function() {
       this.app_loaded = true;
     },
     methods: {
+      refreshCurrentFolder: function() {
+        if(app.buckets_objects)
+          app.listObjects({
+            prefix: app.buckets_objects.Prefix
+          }, '/* @echo REQUEST_SEARCH_OUTSIDE */')
+      },
+      requestNewVersion: function() {
+        return caches.open(app.cache_version).then(function(cache) {
+          cache.keys().then(function(keys) {
+            return keys.reduce(function(promise, key) {
+              return promise.then(function() {
+                return cache.delete(key);
+              })
+            }, Promise.resolve()).then(function() {
+              navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                return registrations.reduce(function(promise, registration) {
+                  return promise.then(function() {
+                    return registration.update()
+                  })
+                }, Promise.resolve())
+              })
+            }).then(function() {
+              location.reload();
+            })
+          })
+        })
+      },
       containFiles: function() {
         return this.buckets_objects && this.buckets_objects.Contents.filter(function(content) {
           return content.Key !== app.buckets_objects.Prefix;
         }).length > 0;
+      },
+      containFolders: function() {
+        return this.buckets_objects && this.buckets_objects.CommonPrefixes.filter(function(common_prefix) {
+          return common_prefix.Prefix !== app.buckets_objects.Prefix;
+        }).length > 0;
+      },
+      containFilesOrFolders: function() {
+        return app.containFiles() || app.containFolders();
       },
       countFilesToDelete: function() {
         return this.getFilesToDelete().length;
@@ -198,7 +234,14 @@ $(document).ready(function() {
           ['start_after', bucket.start_after || '']
         ]);
 
-        fetch('/api/list_objects?' + querystring).then(function(response) {
+        var options = {}
+
+        if(mode === '/* @echo REQUEST_SEARCH_OUTSIDE */')
+          options.headers = {
+            '/* @echo REQUEST_SEARCH_TARGET */': '/* @echo REQUEST_SEARCH_OUTSIDE */'
+          }
+
+        fetch('/api/list_objects?' + querystring, options).then(function(response) {
           return response.status === 200
             ? successResponse(response)
             : errorResponse(response)

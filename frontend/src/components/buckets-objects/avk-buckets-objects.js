@@ -71,7 +71,7 @@ Vue.component('avk-buckets-objects', {
         comp.state = 'normal';
         return comp.listObjects({
           prefix: comp.buckets_objects.Prefix
-        });
+        }, '/* @echo REQUEST_SEARCH_OUTSIDE */');
       });
     },
     deleteObject: function() {
@@ -98,7 +98,7 @@ Vue.component('avk-buckets-objects', {
         comp.state = 'normal';
         return comp.listObjects({
           prefix: bucket.Prefix
-        });
+        }, '/* @echo REQUEST_SEARCH_OUTSIDE */');
       });
     },
     deleteFile: function(bucket, object, a) {

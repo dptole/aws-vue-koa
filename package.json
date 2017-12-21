@@ -51,6 +51,15 @@
         "hostname": "localhost",
         "port": 9999
       }
+    },
+    "service_worker": {
+      "cache_version": 1,
+      "request_search": {
+        "origin": "x-fe-from",
+        "target": "x-fe-to",
+        "outside": "network",
+        "inside": "js-cache-api"
+      }
     }
   }
 }

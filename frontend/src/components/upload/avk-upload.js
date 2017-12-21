@@ -55,7 +55,7 @@ Vue.component('avk-upload', {
               comp.files_to_upload = [];
               comp.listObjects({
                 prefix: bucket.Prefix
-              });
+              }, '/* @echo REQUEST_SEARCH_OUTSIDE */');
             }, 1e2);
           }, 2e3);
         }

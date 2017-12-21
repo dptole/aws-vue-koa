@@ -12,9 +12,36 @@ const gulp_run_sequence = require('run-sequence')
 const path = require('path')
 const del = require('del')
 const pump = require('pump')
+const fs = require('fs')
+const crypto = require('crypto')
 const _package = require('./package.json')
 const build_folder = _package.config.folders.build
 const src_folder = _package.config.folders.src
+
+function getPreprocessConfigs() {
+  var config = getFreshConfigs()
+  return {
+    context: {
+      NODE_ENV: NODE_ENV,
+      CACHE_VERSION: getCacheVersion(),
+      REQUEST_SEARCH_ORIGIN: config.service_worker.request_search.origin,
+      REQUEST_SEARCH_TARGET: config.service_worker.request_search.target,
+      REQUEST_SEARCH_OUTSIDE: config.service_worker.request_search.outside,
+      REQUEST_SEARCH_INSIDE: config.service_worker.request_search.inside
+    }
+  }
+}
+
+function getFreshConfigs() {
+  return JSON.parse(fs.readFileSync('./package.json').toString()).config
+}
+
+function getCacheVersion() {
+  const hash = crypto.createHash('md5')
+  const config = getFreshConfigs()
+  hash.update('' + config.service_worker.cache_version)
+  return hash.digest('hex')
+}
 
 const vue_path = {
   dev: 'node_modules/vue/dist/vue.js',
@@ -98,7 +125,7 @@ gulp.task('css', function(callback) {
       build_folder + '/**/*.css',
       materialize_css_path[NODE_ENV]
     ]),
-    gulp_clean_css({keepSpecialComments: 0, processImport: false}),
+    gulp_clean_css({keepSpecialComments: 0, processImport: true, processImportFrom: ['all'], rebase: false}),
     gulp_concat('css/app.css'),
     gulp.dest(build_folder)
   ], callback)
@@ -142,11 +169,7 @@ gulp.task('copy', function(callback) {
 gulp.task('preprocess-dev', function(callback) {
   pump([
     gulp.src(build_folder + '/**/*'),
-    gulp_preprocess({
-      context: {
-        NODE_ENV: NODE_ENV
-      }
-    }),
+    gulp_preprocess(getPreprocessConfigs()),
     gulp.dest(build_folder)
   ], callback)
 })
@@ -154,11 +177,7 @@ gulp.task('preprocess-dev', function(callback) {
 gulp.task('preprocess-prod', function(callback) {
   pump([
     gulp.src(build_folder + '/**/*'),
-    gulp_preprocess({
-      context: {
-        NODE_ENV: NODE_ENV
-      }
-    }),
+    gulp_preprocess(getPreprocessConfigs()),
     gulp.dest(build_folder)
   ], callback)
 })

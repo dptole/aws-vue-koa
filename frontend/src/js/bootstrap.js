@@ -28,20 +28,14 @@
       });
     }
 
-    // @if NODE_ENV='dev'
-    importScripts(['/js/app.js'])
-    // @endif
-    
-    // @if NODE_ENV='production'
     registerServiceWorker(service_worker_script_url).then(function(registration) {
-      if(!registration.old) return location = location;
+      console.log(registration);
+      if(!registration.old) return location.reload();
+      app.classList.remove('sw-phase');
       return importScripts(['/js/app.js']);
-    })
-    // @endif
-
-    .catch(function(error) {
+    }).catch(function(error) {
       var div = document.querySelector('.page-loading');
-      if(div) div.textContent = error.message;
+      if(div && error) div.textContent = error.message;
     });
   });
 

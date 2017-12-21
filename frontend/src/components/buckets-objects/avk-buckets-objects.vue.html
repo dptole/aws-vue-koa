@@ -5,44 +5,38 @@
       <ul class="collection with-header hover-effect">
         <li class="collection-header">
           <h4 class="green-text text-lighten-2 break-word">
-            <span v-for="prefix in buckets_objects.prefix_array" class="clickable" @click="listObjects({prefix: prefix.breadcrumbs})">
+            <span v-for="prefix in buckets_objects.prefix_array" class="clickable" @click="is_normal_mode &amp;&amp; listObjects({prefix: prefix.breadcrumbs})">
               {{ prefix.valueOf() }}/
             </span>
           </h4>
         </li>
 
-        <li v-for="content, index in buckets_objects.Contents" class="collection-item">
-          <div v-if="buckets_objects.Prefix === content.Key">
-            .
-            <a v-show="is_normal_mode" href="/#!" @click.prevent="listObjects({prefix: buckets_objects.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
-          </div>
-          <div v-else>
-            {{ content.Key.replace(buckets_objects.Prefix, '') }}
-            <a v-show="is_normal_mode" href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
+        <li v-for="content, index in buckets_objects.Contents" v-show="buckets_objects.Prefix !== content.Key" class="collection-item">
+          {{ content.Key.replace(buckets_objects.Prefix, '') }}
+          <a v-show="is_normal_mode" href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
 
-            <span v-show="is_delete_mode" class="right secondary-content">
-              <input type="checkbox" class="right" :id="index" v-model="delete_multiple[index]">
-              <label :for="index"></label>
-            </span>
+          <span v-show="is_delete_mode" class="right secondary-content">
+            <input type="checkbox" class="right" :id="index" v-model="delete_multiple[index]">
+            <label :for="index"></label>
+          </span>
 
-            <a v-if="is_normal_mode" href="/#!" @click.prevent="modalDeleteObject(buckets_objects, content)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
-          </div>
+          <a v-if="is_normal_mode" href="/#!" @click.prevent="modalDeleteObject(buckets_objects, content)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
         </li>
 
-        <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
+        <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-show="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
             {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
             <a v-show="is_normal_mode" href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
           </div>
         </li>
 
-        <li v-if="(buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length &lt; 1) || (buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length === 1 &amp;&amp; buckets_objects.Contents[0].Key === buckets_objects.Prefix)" class="collection-item avk-empty-folder">
+        <li v-show="!containFilesOrFolders()" class="collection-item avk-empty-folder">
           <div>
             <h4>This folder is empty.</h4>
           </div>
         </li>
 
-        <li v-show="(buckets_objects.IsTruncated || list_start_after.length) &amp;&amp; is_normal_mode" class="collection-item">
+        <li v-show="(buckets_objects.IsTruncated || list_start_after.length) &amp;&amp; is_normal_mode" class="collection-item avk-pagination">
           <div class="row">
             <button v-if="list_start_after.length" class="btn left green" @click.prevent="previousPage()"><i class="material-icons">navigate_before</i></button>
             <button v-if="buckets_objects.IsTruncated" class="btn right green" @click.prevent="nextPage()"><i class="material-icons">navigate_next</i></button>
@@ -96,6 +90,7 @@
     </a>
     <ul v-show="is_normal_mode">
       <li><a v-if="containFiles()" class="btn-floating red" @click.prevent="deleteMode()"><i class="material-icons">delete</i></a></li>
+      <li><a class="btn-floating purple" @click.prevent="refreshCurrentFolder()"><i class="material-icons">child_care</i></a></li>
       <li><a class="btn-floating orange" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a></li>
       <li><a class="btn-floating green" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a></li>
     </ul>
