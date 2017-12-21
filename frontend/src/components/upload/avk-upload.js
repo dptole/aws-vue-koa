@@ -17,6 +17,15 @@ Vue.component('avk-upload', {
     }
   },
   methods: {
+    listFoldersToUpload: function(event) {
+      this.files_to_upload = Array.from(event.target.files).map(function(file) {
+        return {
+          filename: file.webkitRelativePath,
+          file_object: file,
+          status: 'waiting'
+        };
+      });
+    },
     listFilesToUpload: function(event) {
       this.files_to_upload = Array.from(event.target.files).map(function(file) {
         return {

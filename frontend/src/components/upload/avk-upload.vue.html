@@ -18,10 +18,23 @@
         </li>
 
         <li class="collection-item avk-big-block-upload" v-if="files_to_upload.length &lt; 1">
-          <a class="waves-effect waves-light btn-large green">
-            <i class="material-icons left">cloud_upload</i> Select files
-            <input multiple  type="file" @change="listFilesToUpload" class="green">
-          </a>
+          <div class="row">
+            <div class="col s12">
+              <a class="waves-effect waves-light btn-large green">
+                <i class="material-icons left">insert_drive_file</i> Select files
+                <input multiple type="file" @change="listFilesToUpload" class="green">
+              </a>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col s12">
+              <a class="waves-effect waves-light btn-large blue">
+                <i class="material-icons left">folder_open</i> Select folders
+                <input multiple directory webkitdirectory type="file" @change="listFoldersToUpload" class="green">
+              </a>
+            </div>
+          </div>
         </li>
 
         <li v-if="files_to_upload.length &gt; 0" v-for="file_to_upload in files_to_upload" class="collection-item">

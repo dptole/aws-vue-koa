@@ -27,7 +27,6 @@
           <div>
             {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
             <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
-            <a href="/#!" @click.prevent="modalDeleteObject(buckets_objects, comment_prefix)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
           </div>
         </li>
 
@@ -79,9 +78,9 @@
       <i class="large material-icons">menu</i>
     </a>
     <ul>
+      <li><a class="btn-floating blue" @click.prevent="navbarGoTo('/logout')"><i class="material-icons">power_settings_new</i></a></li>
       <li><a class="btn-floating orange" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a></li>
       <li><a class="btn-floating green" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a></li>
-      <li><a class="btn-floating blue" @click.prevent="navbarGoTo('/logout')"><i class="material-icons">power_settings_new</i></a></li>
     </ul>
   </div>
 </div>
