@@ -47,7 +47,7 @@ Vue.component('avk-buckets-objects', {
 
       var querystring = this.serializeQueryString([
         ['bucket_name', bucket.Name],
-        ['key', object.Key]
+        ['key', object.Key || object.Prefix]
       ]);
 
       $('#modal_delete_object').modal('close');

@@ -5,7 +5,9 @@
       <button class="btn green" :disabled="is_loading" @click.prevent="$router.go(-1)">
         <i class="material-icons">keyboard_backspace</i>
       </button>
+    </div>
 
+    <div class="col s12">
       <ul class="collection with-header">
         <li class="collection-header">
           <h4 class="green-text text-lighten-2 break-word">
@@ -27,10 +29,10 @@
             <span class="right">
               <i class="green-text material-icons" v-if="file_to_upload.status === 'uploaded'">done</i>
               <i class="red-text material-icons" v-else-if="file_to_upload.status === 'error'">clear</i>
-              <i class="grey-text material-icons" v-else>more_horiz</i>
+              <i class="grey-text material-icons" v-else-if="is_loading">more_horiz</i>
             </span>
 
-            {{ file_to_upload.file_object.name }}
+            <input class="avk-object-upload" type="text" v-model="file_to_upload.filename">
             <a href="/#!" @click.prevent="removeFilesFromUploadList(file_to_upload)" v-if="!is_loading" class="secondary-content"><i class="material-icons">clear</i></a>
           </div>
         </li>

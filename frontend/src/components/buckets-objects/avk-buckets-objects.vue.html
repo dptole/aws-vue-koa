@@ -27,10 +27,11 @@
           <div>
             {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
             <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
+            <a href="/#!" @click.prevent="modalDeleteObject(buckets_objects, comment_prefix)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
           </div>
         </li>
 
-        <li v-if="buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length === 1 &amp;&amp; buckets_objects.Contents[0].Key === buckets_objects.Prefix" class="collection-item">
+        <li v-if="(buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length &lt; 1) || (buckets_objects.CommonPrefixes.length &lt; 1 &amp;&amp; buckets_objects.Contents.length === 1 &amp;&amp; buckets_objects.Contents[0].Key === buckets_objects.Prefix)" class="collection-item avk-empty-folder">
           <div>
             <h4>This folder is empty.</h4>
           </div>
@@ -65,7 +66,7 @@
   <div id="modal_delete_object" class="modal bottom-sheet">
     <div class="modal-content">
       <h4>Delete file</h4>
-      <p>Are you sure deleting "{{ deleting.bucket &amp;&amp; deleting.bucket.Name }}/{{ deleting.object &amp;&amp; deleting.object.Key }}"?</p>
+      <p>Are you sure deleting "{{ deleting.bucket &amp;&amp; deleting.bucket.Name }}/{{ deleting.object &amp;&amp; (deleting.object.Key || deleting.object.Prefix) }}"?</p>
     </div>
     <div class="modal-footer">
       <a href="#!" @click.prevent class="modal-action modal-close btn green">Cancel</a>

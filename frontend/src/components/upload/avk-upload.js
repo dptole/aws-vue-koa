@@ -20,6 +20,7 @@ Vue.component('avk-upload', {
     listFilesToUpload: function(event) {
       this.files_to_upload = Array.from(event.target.files).map(function(file) {
         return {
+          filename: file.name,
           file_object: file,
           status: 'waiting'
         };
@@ -53,7 +54,7 @@ Vue.component('avk-upload', {
 
         comp.uploadObject(
           bucket,
-          file.file_object,
+          file,
           comp.selected_acl
         ).then(function(result) {
           file.status = 'uploaded';
@@ -79,11 +80,12 @@ Vue.component('avk-upload', {
         , querystring = this.serializeQueryString([
             ['bucket_name', bucket.Name],
             ['prefix', bucket.Prefix],
+            ['filename', file.filename],
             ['acl', acl]
           ])
       ;
 
-      form_data.append('file', file);
+      form_data.append('file', file.file_object);
 
       return fetch('/api/upload_object?' + querystring, {
         method: 'post',

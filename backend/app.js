@@ -189,6 +189,7 @@ function backendApp(_package) {
           'secret_access_key' in ctx.query &&
           'region' in ctx.query &&
           'bucket_name' in ctx.query &&
+          'filename' in ctx.query &&
           'prefix' in ctx.query &&
           'acl' in ctx.query
         )) {
@@ -209,7 +210,7 @@ function backendApp(_package) {
           Bucket: ctx.query.bucket_name,
           ACL: ctx.query.acl,
           ContentType: ctx.req.file.mimetype,
-          Key: path.join(ctx.query.prefix, ctx.req.file.originalname)
+          Key: path.join(ctx.query.prefix, ctx.query.filename)
         }).then(data => {
           ctx.body = data
         }).catch(error => {
