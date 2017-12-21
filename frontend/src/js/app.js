@@ -45,6 +45,7 @@ $(document).ready(function() {
     data: {
       // global
       app_loaded: false,
+      app_dragover: 'false',
       app_page: '',
       state: 'normal', // normal, loading, error
       // login
@@ -55,12 +56,12 @@ $(document).ready(function() {
       buckets: null,
       // buckets objects
       buckets_objects: null,
-
       list_start_after: [],
       // delete
       deleting: {},
       // upload
       files_to_upload: [],
+      uploaded_files: 0,
       selected_acl: 'public-read',
       acl_options: [
         'private',
@@ -99,7 +100,6 @@ $(document).ready(function() {
         this.$router.push('/dashboard');
       },
       goToLoginIfUnknownPath: function() {
-        return;
         var matched = router.getMatchedComponents(location);
         if(!matched.length)
           router.push('/login');
@@ -269,22 +269,38 @@ $(document).ready(function() {
   }).$mount('#app');
 
   router.afterEach(function(to, from) {
-    if(from.name === 'upload')
+    if(from.name === 'upload') {
       app.files_to_upload = [];
-
-    document.documentElement.ondragover = function(event) {
-      event.preventDefault();
-    };
-
-    document.documentElement.ondrop = function(event) {
-      event.preventDefault();
-      $('#modal_drop_object').modal('open');
-    };
+      app.uploaded_files = 0;
+    }
 
     router.app.state = 'normal';
     router.app.app_page = to.name;
     router.app.goToLoginIfUnknownPath();
   });
+
+  document.documentElement.onmouseover = function(event) {
+    app.app_dragover = 'false';
+  };
+
+  document.documentElement.ondragover = function(event) {
+    event.preventDefault();
+    if(app.$route.name === 'upload' || app.$route.name === 'buckets-objects')
+      app.app_dragover = 'true';
+  };
+
+  document.documentElement.ondrop = function(event) {
+    event.preventDefault();
+    app.app_dragover = 'false';
+
+    if(app.$route.name === 'upload' || app.$route.name === 'buckets-objects') {
+      app.navbarGoTo('/upload');
+      app.listDropToUpload(event).then(function() {
+        app.startMaterialSelect();
+      });
+    } else
+      $('#modal_drop_object').modal('open');
+  };
 
   // Bugfix: if the hash does not start with "#/" vue-router will not process it properly.
   window.addEventListener('hashchange', function(event) {

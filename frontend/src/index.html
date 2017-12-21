@@ -9,7 +9,7 @@
   <body>
     <noscript>Enable JavaScript to finish loading.</noscript>
 
-    <div id="app" class="orange lighten-1 page-flexbox-wrapper" :v-page="app_page">
+    <div id="app" class="orange lighten-1 page-flexbox-wrapper" :v-page="app_page" :v-dragover="app_dragover">
       <div class="loader-wrapper" v-if="!app_loaded">
         <div class="preloader-wrapper big active">
           <div class="spinner-layer spinner-red-only">
@@ -23,6 +23,8 @@
           </div>
         </div>
       </div>
+
+      <div id="dragndrop_layer">Drag files or folders here</div>
 
       <router-view v-if="app_loaded" name="nav"></router-view>
       <router-view v-if="app_loaded" name="side-nav"></router-view>

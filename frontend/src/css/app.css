@@ -32,3 +32,30 @@ ul.hover-effect.collection .collection-item:not(.active):not(.avk-big-block-uplo
 ul.hover-effect.collection .collection-item:not(.active):not(.avk-big-block-upload):not(.avk-empty-folder):hover {
   background-color: #ddd;
 }
+
+#app[v-dragover=true] #dragndrop_layer {
+  opacity: 0.8;
+  width: 95%;
+  height: 95%;
+  left: 2.5%;
+  top: 2.5%;
+}
+
+#dragndrop_layer {
+  background-color: blue;
+  position: absolute;
+  transition: opacity .5s;
+  opacity: 0;
+  display: flex;
+  width: 0;
+  height: 0;
+  left: -100px;
+  top: -100px;
+  border: black dashed 10px;
+  z-index: 10;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+}

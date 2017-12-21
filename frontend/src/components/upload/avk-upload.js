@@ -8,11 +8,6 @@ Vue.component('avk-upload', {
   created: function() {
     var comp = this;
 
-    document.documentElement.ondrop = function(event) {
-      event.preventDefault();
-      comp.listDropToUpload(event);
-    };
-
     if(comp.files_to_upload.length > 0)
       comp.startMaterialSelect();
   },
@@ -75,6 +70,7 @@ Vue.component('avk-upload', {
           comp.selected_acl
         ).then(function(result) {
           file.status = 'uploaded';
+          comp.uploaded_files++;
           console.log(result);
         }).catch(function(error) {
           file.status = 'error';
@@ -86,10 +82,10 @@ Vue.component('avk-upload', {
 
       uploadIter(comp.files_to_upload, 0);
     },
-    removeFilesFromUploadList: function(file) {
-      var file_index = this.files_to_upload.indexOf(file);
-      if(~file_index)
-        this.files_to_upload.splice(file_index, 1);
+    removeFilesFromUploadList: function(file_to_remove) {
+      this.files_to_upload = this.files_to_upload.filter(function(file) {
+        return file !== file_to_remove;
+      });
     },
     resetFiles: function() {
       this.files_to_upload = [];
