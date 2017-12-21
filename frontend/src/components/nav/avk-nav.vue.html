@@ -21,6 +21,12 @@
         Upload
       </a>
     </li>
+    <li v-show="containFiles()">
+      <a href="/#" @click.prevent="deleteMode()">
+        <i class="material-icons">delete</i>
+        Delete files
+      </a>
+    </li>
 
     <li><div class="divider"></div></li>
 
@@ -34,9 +40,9 @@
 
   <nav class="orange lighten-1">
     <div class="nav-wrapper">
-      <a v-show="!is_loading" data-activates="sidenav_menu" class="button-collapse clickable"><i class="material-icons">menu</i></a>
+      <a v-show="!is_loading &amp;&amp; is_normal_mode" data-activates="sidenav_menu" class="button-collapse clickable"><i class="material-icons">menu</i></a>
 
-      <ul id="nav-mobile" class="left hide-on-med-and-down">
+      <ul v-show="!is_loading &amp;&amp; is_normal_mode" id="nav-mobile" class="left hide-on-med-and-down">
         <li v-show="buckets_objects">
           <a href="/#/upload" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a>
         </li>
@@ -47,7 +53,7 @@
 
       <a href="#" @click.prevent.stop="goToDashboard()" class="brand-logo center">AVK</a>
 
-      <ul v-if="!is_loading" id="nav-mobile" class="right hide-on-med-and-down">
+      <ul v-show="!is_loading &amp;&amp; is_normal_mode" id="nav-mobile" class="right hide-on-med-and-down">
         <li>
           <a href="/#/logout"><i class="material-icons">power_settings_new</i></a>
         </li>

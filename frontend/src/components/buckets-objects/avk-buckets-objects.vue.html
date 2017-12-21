@@ -11,22 +11,28 @@
           </h4>
         </li>
 
-        <li v-for="content in buckets_objects.Contents" class="collection-item">
+        <li v-for="content, index in buckets_objects.Contents" class="collection-item">
           <div v-if="buckets_objects.Prefix === content.Key">
             .
-            <a href="/#!" @click.prevent="listObjects({prefix: buckets_objects.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
+            <a v-show="is_normal_mode" href="/#!" @click.prevent="listObjects({prefix: buckets_objects.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
           </div>
           <div v-else>
             {{ content.Key.replace(buckets_objects.Prefix, '') }}
-            <a href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
-            <a href="/#!" @click.prevent="modalDeleteObject(buckets_objects, content)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
+            <a v-show="is_normal_mode" href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
+
+            <span v-show="is_delete_mode" class="right secondary-content">
+              <input type="checkbox" class="right" :id="index" v-model="delete_multiple[index]">
+              <label :for="index"></label>
+            </span>
+
+            <a v-if="is_normal_mode" href="/#!" @click.prevent="modalDeleteObject(buckets_objects, content)" class="secondary-content"><i class="green-text material-icons">clear</i></a>
           </div>
         </li>
 
         <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-if="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
             {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
-            <a href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
+            <a v-show="is_normal_mode" href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
           </div>
         </li>
 
@@ -36,7 +42,7 @@
           </div>
         </li>
 
-        <li v-if="buckets_objects.IsTruncated || list_start_after.length" class="collection-item">
+        <li v-show="(buckets_objects.IsTruncated || list_start_after.length) &amp;&amp; is_normal_mode" class="collection-item">
           <div class="row">
             <button v-if="list_start_after.length" class="btn left green" @click.prevent="previousPage()"><i class="material-icons">navigate_before</i></button>
             <button v-if="buckets_objects.IsTruncated" class="btn right green" @click.prevent="nextPage()"><i class="material-icons">navigate_next</i></button>
@@ -73,14 +79,30 @@
     </div>
   </div>
 
-  <div class="fixed-action-btn" v-show="!is_loading">
+  <div id="modal_delete_multiple_objects" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Delete files</h4>
+      <p>You are going to delete "{{ countFilesToDelete() }}" files, are you sure?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" @click.prevent class="modal-action modal-close btn green">Cancel</a>
+      <a href="#!" @click.prevent="deleteMultipleObjects()" data-trigger="delete" class="modal-action waves-effect waves-red btn red">Delete</a>
+    </div>
+  </div>
+
+  <div class="fixed-action-btn horizontal" v-show="!is_loading">
     <a class="btn-floating btn-large blue">
       <i class="large material-icons">menu</i>
     </a>
-    <ul>
-      <li><a class="btn-floating red" @click.prevent="navbarGoTo('/logout')"><i class="material-icons">power_settings_new</i></a></li>
+    <ul v-show="is_normal_mode">
+      <li><a v-if="containFiles()" class="btn-floating red" @click.prevent="deleteMode()"><i class="material-icons">delete</i></a></li>
+      <li><a class="btn-floating purple" @click.prevent="navbarGoTo('/logout')"><i class="material-icons">power_settings_new</i></a></li>
       <li><a class="btn-floating orange" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a></li>
       <li><a class="btn-floating green" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a></li>
+    </ul>
+    <ul v-show="is_delete_mode">
+      <li><a class="btn-floating red" @click.prevent="modalDeleteMultipleObjects()"><i class="material-icons">delete_forever</i></a></li>
+      <li><a class="btn-floating green" @click.prevent="cancelDeleteMultipleObjects()"><i class="material-icons">undo</i></a></li>
     </ul>
   </div>
 </div>

@@ -46,8 +46,7 @@ Vue.component('avk-upload', {
 
       function uploadIter(files, index) {
         if(!files[index]) {
-          Materialize.toast('Done', 2e3);
-          comp.files_to_upload = [];
+          Materialize.toast(comp.uploaded_files + ' files uploaded', 2e3);
 
           return setTimeout(function() {
             comp.state = 'normal';

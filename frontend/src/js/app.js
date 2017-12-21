@@ -57,8 +57,10 @@ $(document).ready(function() {
       // buckets objects
       buckets_objects: null,
       list_start_after: [],
+      mode: 'normal', // normal, delete
       // delete
       deleting: {},
+      delete_multiple: [],
       // upload
       files_to_upload: [],
       uploaded_files: 0,
@@ -76,6 +78,12 @@ $(document).ready(function() {
     computed: {
       is_loading: function() {
         return this.state === 'loading';
+      },
+      is_normal_mode: function() {
+        return this.mode === 'normal';
+      },
+      is_delete_mode: function() {
+        return this.mode === 'delete';
       }
     },
     created: function() {
@@ -83,6 +91,32 @@ $(document).ready(function() {
       this.app_loaded = true;
     },
     methods: {
+      containFiles: function() {
+        return this.buckets_objects && this.buckets_objects.Contents.filter(function(content) {
+          return content.Key !== app.buckets_objects.Prefix;
+        }).length > 0;
+      },
+      countFilesToDelete: function() {
+        return this.getFilesToDelete().length;
+      },
+      deleteMode: function() {
+        this.mode = 'delete';
+        $('.button-collapse').sideNav('hide');
+      },
+      normalMode: function() {
+        this.mode = 'normal';
+      },
+      getFilesToDelete: function() {
+        return this.delete_multiple.map(function(del, index) {
+          return del ? index : -1;
+        }).filter(function(index) {
+          return ~index;
+        }).map(function(index) {
+          return app.buckets_objects.Contents[index];
+        }).filter(function(value) {
+          return value;
+        });
+      },
       startMaterialSelect: function() {
         requestAnimationFrame(function() {
             $('select').material_select();
