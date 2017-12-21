@@ -34,14 +34,14 @@
 
   <nav class="orange lighten-1">
     <div class="nav-wrapper">
-      <a href="#" v-if="!is_loading" data-activates="sidenav_menu" class="button-collapse"><i class="material-icons">menu</i></a>
+      <a v-show="!is_loading" data-activates="sidenav_menu" class="button-collapse clickable"><i class="material-icons">menu</i></a>
 
       <ul id="nav-mobile" class="left hide-on-med-and-down">
         <li v-show="buckets_objects">
-          <a href="/#/upload"><i class="material-icons">cloud_upload</i></a>
+          <a href="/#/upload" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a>
         </li>
         <li v-show="buckets_objects">
-          <a href="/#" @click.prevent=""><i class="material-icons">archive</i></a>
+          <a href="/#" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a>
         </li>
       </ul>
 

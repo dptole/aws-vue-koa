@@ -24,3 +24,11 @@ body {
 .break-word {
   word-wrap: break-word;
 }
+
+.collection .collection-item:not(.active):not(.avk-big-block-upload) {
+  transition: .25s;
+}
+
+.collection .collection-item:not(.active):not(.avk-big-block-upload):hover {
+  background-color: #ddd;
+}

@@ -6,8 +6,14 @@ Vue.component('avk-buckets-objects', {
     return this.$parent;
   },
   created: function() {
+    var comp = this;
+
     requestAnimationFrame(function() {
-      $('#modal_delete_object').modal();
+      $('#modal_delete_object').modal({
+        complete: function() {
+          comp.deleting = {};
+        }
+      });
     });
 
     if(!this.buckets_objects)
@@ -33,8 +39,6 @@ Vue.component('avk-buckets-objects', {
       if(comp.is_loading)
         return false;
 
-      $('#modal_delete_object').modal('close');
-
       var bucket = comp.deleting.bucket
         , object = comp.deleting.object
       ;
@@ -45,6 +49,8 @@ Vue.component('avk-buckets-objects', {
         ['bucket_name', bucket.Name],
         ['key', object.Key]
       ]);
+
+      $('#modal_delete_object').modal('close');
 
       fetch('/api/delete_object?' + querystring, {
         method: 'delete'
@@ -58,7 +64,6 @@ Vue.component('avk-buckets-objects', {
         Materialize.toast('Error', 2000);
       }).then(function() {
         comp.state = 'normal';
-        comp.deleting = {};
         comp.listObjects({
           prefix: bucket.Prefix
         });

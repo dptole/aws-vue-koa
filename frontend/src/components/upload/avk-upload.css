@@ -24,3 +24,8 @@
   align-items: center;
   min-height: 300px;
 }
+
+.avk-upload > .row > .col.s12 > ul {
+  box-shadow: black 0px 0px 10px;
+  border-radius: 10px;
+}

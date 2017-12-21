@@ -31,7 +31,7 @@
             </span>
 
             {{ file_to_upload.file_object.name }}
-            <a href="/#!" @click.prevent="removeFilesFromUploadList(file_to_upload)" class="secondary-content"><i class="material-icons">clear</i></a>
+            <a href="/#!" @click.prevent="removeFilesFromUploadList(file_to_upload)" v-if="!is_loading" class="secondary-content"><i class="material-icons">clear</i></a>
           </div>
         </li>
       </ul>
