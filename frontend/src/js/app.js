@@ -44,6 +44,13 @@ $(document).ready(function() {
         nav: importComponent('nav/avk-nav')
       }
     }, {
+      name: 'about',
+      path: '/about',
+      components: {
+        default: importComponent('about/avk-about'),
+        nav: importComponent('nav/avk-nav')
+      }
+    }, {
       name: 'upload',
       path: '/upload',
       components: {

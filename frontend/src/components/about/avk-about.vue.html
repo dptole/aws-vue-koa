@@ -1,0 +1,46 @@
+
+<div class="avk-about">
+  <div class="row">
+    <div class="col s12">
+      <h4>AVK - AWS SDK + Vue.js + Koa</h4>
+
+      <p>You can manage your Amazon S3 bucket taking advantage of the <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">Service Worker's</a> ability of intercepting requests in order to cache the responses to improve performance. You can also drag and drop files and folders to be uploaded to the bucket you happen to be at.</p>
+
+      <p>This is a <a target="_blank" href="https://developers.google.com/web/progressive-web-apps/">Progressive Web App</a> created using the following libraries/technologies:</p>
+
+      <ul>
+        <li><a target="_blank" href="http://materializecss.com">MaterializeCSS</a></li>
+        <li><a target="_blank" href="http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html">AWS SDK</a></li>
+        <li><a target="_blank" href="http://koajs.com/">Koa</a></li>
+        <li><a target="_blank" href="https://vuejs.org/">Vue.js</a></li>
+        <li><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">Service Worker</a></li>
+        <li><a target="_blank" href="https://developers.google.com/web/progressive-web-apps/">PWA</a></li>
+      </ul>
+
+      <h5>
+        About the baby icon:
+      </h5>
+
+      <p>
+        <a @click.prevent href="/#/" class="btn btn-floating green">
+          <i class="material-icons ">child_care</i>
+        </a>
+      </p>
+
+      <p>
+        Update the bucket you are in. The idea is to fetch the newest version (therefore a baby's face), rather than the old one (from cache).
+      </p>
+
+      <p>
+        Author: <a target="_blank" href="https://github.com/dptole">Danillo Paiva Toledo</a>
+      </p>
+
+      <p>
+        <a href="/#/" class="btn green" @click.prevent="requestNewVersion()">
+          <i class="material-icons left">system_update</i>
+          Check for updates
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
