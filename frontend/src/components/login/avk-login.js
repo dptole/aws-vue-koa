@@ -20,13 +20,18 @@ Vue.component('avk-login', {
 
       function successResponse(response) {
         return response.json().then(function(buckets) {
-          Materialize.toast('Welcome!', 2000);
+          localStorage.last_access_key_id = comp.access_key_id;
+          localStorage.last_secret_access_key = comp.secret_access_key;
+          localStorage.last_region = comp.region;
           comp.buckets = buckets;
           comp.$parent.$router.push('/dashboard');
         }).catch(errorResponse)
       }
 
       function errorResponse(error) {
+        localStorage.last_access_key_id = '';
+        localStorage.last_secret_access_key = '';
+        localStorage.last_region = '';
         Materialize.toast('Error!', 2000);
       }
 

@@ -3,20 +3,33 @@ $(document).ready(function() {
     routes: [{
       name: 'login',
       path: '/login',
+      beforeEnter: function(to, from, next) {
+        if(vue_app) {
+          vue_app.access_key_id = localStorage.last_access_key_id || '';
+          vue_app.secret_access_key = localStorage.last_secret_access_key || '';
+          vue_app.region = localStorage.last_region || '';
+        }
+        next();
+      },
       component: importComponent('login/avk-login')
     }, {
       name: 'logout',
       path: '/logout',
       beforeEnter: function(to, from, next) {
-        app.state = 'normal';
+        vue_app.state = 'normal';
         next('/login');
       }
     }, {
       name: 'dashboard',
       path: '/dashboard',
       beforeEnter: function(to, from, next) {
-        if(app)
-          app.buckets_objects = null;
+        if(from.name === 'login') {
+          vue_app.state = 'normal';
+          Materialize.toast('Welcome!', 2000);
+        }
+
+        if(vue_app)
+          vue_app.buckets_objects = null;
         next();
       },
       components: {
@@ -40,7 +53,7 @@ $(document).ready(function() {
     }]
   });
 
-  var app = new Vue({
+  var vue_app = new Vue({
     router: router,
     data: {
       // global
@@ -48,11 +61,13 @@ $(document).ready(function() {
       app_loaded: false,
       app_dragover: 'false',
       app_page: '',
+      is_online: navigator.onLine,
+      toast_offline: null,
       state: 'normal', // normal, loading, error
       // login
-      access_key_id: '',
-      secret_access_key: '',
-      region: '',
+      access_key_id: localStorage.last_access_key_id || '',
+      secret_access_key: localStorage.last_secret_access_key || '',
+      region: localStorage.last_region || '',
       // dashboard
       buckets: null,
       // buckets objects
@@ -87,19 +102,33 @@ $(document).ready(function() {
         return this.mode === 'delete';
       }
     },
+    watch: {
+      is_online: function(new_value, old_value) {
+        if(!old_value && new_value) {
+          if(vue_app.toast_offline) {
+            vue_app.toast_offline.remove();
+            vue_app.toast_offline = null;
+          }
+          Materialize.toast('We are back! <i class="material-icons">cloud_done</i>', 2000);
+        } else if(!new_value)
+          vue_app.toast_offline = Materialize.toast('You are offline now. <i class="material-icons">cloud_off</i>');
+      }
+    },
     created: function() {
       this.goToLoginIfUnknownPath();
       this.app_loaded = true;
     },
     methods: {
       refreshCurrentFolder: function() {
-        if(app.buckets_objects)
-          app.listObjects({
-            prefix: app.buckets_objects.Prefix
+        if(vue_app.buckets_objects)
+          vue_app.listObjects({
+            prefix: vue_app.buckets_objects.Prefix
           }, '/* @echo REQUEST_SEARCH_OUTSIDE */')
       },
       requestNewVersion: function() {
-        return caches.open(app.cache_version).then(function(cache) {
+        this.state = 'loading';
+        $('.button-collapse').sideNav('hide');
+        return caches.open(vue_app.cache_version).then(function(cache) {
           cache.keys().then(function(keys) {
             return keys.reduce(function(promise, key) {
               return promise.then(function() {
@@ -121,16 +150,16 @@ $(document).ready(function() {
       },
       containFiles: function() {
         return this.buckets_objects && this.buckets_objects.Contents.filter(function(content) {
-          return content.Key !== app.buckets_objects.Prefix;
+          return content.Key !== vue_app.buckets_objects.Prefix;
         }).length > 0;
       },
       containFolders: function() {
         return this.buckets_objects && this.buckets_objects.CommonPrefixes.filter(function(common_prefix) {
-          return common_prefix.Prefix !== app.buckets_objects.Prefix;
+          return common_prefix.Prefix !== vue_app.buckets_objects.Prefix;
         }).length > 0;
       },
       containFilesOrFolders: function() {
-        return app.containFiles() || app.containFolders();
+        return vue_app.containFiles() || vue_app.containFolders();
       },
       countFilesToDelete: function() {
         return this.getFilesToDelete().length;
@@ -148,7 +177,7 @@ $(document).ready(function() {
         }).filter(function(index) {
           return ~index;
         }).map(function(index) {
-          return app.buckets_objects.Contents[index];
+          return vue_app.buckets_objects.Contents[index];
         }).filter(function(value) {
           return value;
         });
@@ -175,24 +204,24 @@ $(document).ready(function() {
           router.push('/login');
       },
       listObjects: function(bucket, mode) {
-        if(app.is_loading)
+        if(vue_app.is_loading)
           return false;
-        app.state = 'loading';
+        vue_app.state = 'loading';
 
         function successResponse(response) {
           return response.json().then(function(buckets_objects) {
-            var root = new String(app.$route.params.bucket);
+            var root = new String(vue_app.$route.params.bucket);
             root.breadcrumbs = '';
 
-            app.buckets_objects = buckets_objects;
-            app.buckets_objects.prefix_array = app.buckets_objects.Prefix.split('/').filter(function(identity) {
+            vue_app.buckets_objects = buckets_objects;
+            vue_app.buckets_objects.prefix_array = vue_app.buckets_objects.Prefix.split('/').filter(function(identity) {
               return identity;
             });
 
-            app.buckets_objects.prefix_array = [
+            vue_app.buckets_objects.prefix_array = [
               root
             ].concat(
-              app.buckets_objects.prefix_array.reduce(function(acc, prefix) {
+              vue_app.buckets_objects.prefix_array.reduce(function(acc, prefix) {
                 var pref = new String(prefix);
                 acc.push(pref);
                 pref.breadcrumbs = acc.join('/') + '/';
@@ -201,9 +230,9 @@ $(document).ready(function() {
             );
 
             if(bucket.start_after)
-              app.list_start_after.push(bucket.start_after);
+              vue_app.list_start_after.push(bucket.start_after);
             else
-              app.list_start_after = [];
+              vue_app.list_start_after = [];
           }).catch(errorResponse);
         }
 
@@ -212,7 +241,7 @@ $(document).ready(function() {
         }
 
         function cleanUpResponse() {
-          app.state = 'normal';
+          vue_app.state = 'normal';
         }
 
         if(mode === 'previous') {
@@ -226,8 +255,8 @@ $(document).ready(function() {
             bucket.prefix = ''
         }
 
-        var querystring = app.serializeQueryString([
-          ['bucket', app.$route.params.bucket],
+        var querystring = vue_app.serializeQueryString([
+          ['bucket', vue_app.$route.params.bucket],
           ['max_keys', 10],
           ['delimiter', '/'],
           ['prefix', bucket.prefix],
@@ -248,23 +277,23 @@ $(document).ready(function() {
         }).then(cleanUpResponse);
       },
       nextPage: function() {
-        app.listObjects({
-          prefix: app.buckets_objects.Prefix,
+        vue_app.listObjects({
+          prefix: vue_app.buckets_objects.Prefix,
           start_after: [].concat(
-            app.buckets_objects.CommonPrefixes.map(function(p) { return p.Prefix; }),
-            app.buckets_objects.Contents.map(function(c) { return c.Key; })
+            vue_app.buckets_objects.CommonPrefixes.map(function(p) { return p.Prefix; }),
+            vue_app.buckets_objects.Contents.map(function(c) { return c.Key; })
           ).pop()
         });
       },
       previousPage: function() {
-        app.listObjects({
-          prefix: app.buckets_objects.Prefix,
-          start_after: (app.list_start_after.pop(), app.list_start_after.pop())
+        vue_app.listObjects({
+          prefix: vue_app.buckets_objects.Prefix,
+          start_after: (vue_app.list_start_after.pop(), vue_app.list_start_after.pop())
         });
       },
       getObject: function(content) {
-        var querystring = app.serializeQueryString([
-          ['bucket', app.$route.params.bucket],
+        var querystring = vue_app.serializeQueryString([
+          ['bucket', vue_app.$route.params.bucket],
           ['key', content.Key]
         ]);
 
@@ -272,9 +301,9 @@ $(document).ready(function() {
       },
       serializeQueryString: function(qs) {
         return [
-          ['access_key_id', app.access_key_id],
-          ['secret_access_key', app.secret_access_key],
-          ['region', app.region]
+          ['access_key_id', vue_app.access_key_id],
+          ['secret_access_key', vue_app.secret_access_key],
+          ['region', vue_app.region]
         ].concat(qs).reduce(function(acc, query) {
           return acc.concat(encodeURIComponent(query[0]) + '=' + encodeURIComponent(query[1]));
         }, []).join('&');
@@ -283,7 +312,7 @@ $(document).ready(function() {
         var acc = [];
         return entries.reduce(function(promise, entry) {
           return promise.then(function() {
-            return app.readEntry(entry).then(function(file_objects) {
+            return vue_app.readEntry(entry).then(function(file_objects) {
               return acc = acc.concat(file_objects);
             });
           });
@@ -332,8 +361,8 @@ $(document).ready(function() {
           return item.webkitGetAsEntry();
         });
 
-        return app.readEntries(entries).then(function(file_objects) {
-          return app.files_to_upload = file_objects.map(function(file_object) {
+        return vue_app.readEntries(entries).then(function(file_objects) {
+          return vue_app.files_to_upload = file_objects.map(function(file_object) {
             return {
               filename: file_object.filename,
               file_object: file_object.file,
@@ -347,8 +376,8 @@ $(document).ready(function() {
 
   router.afterEach(function(to, from) {
     if(from.name === 'upload') {
-      app.files_to_upload = [];
-      app.uploaded_files = 0;
+      vue_app.files_to_upload = [];
+      vue_app.uploaded_files = 0;
     }
 
     router.app.state = 'normal';
@@ -358,27 +387,30 @@ $(document).ready(function() {
 
   dragndrop_layer.ondragleave =
   document.documentElement.onmouseover = function(event) {
-    app.app_dragover = 'false';
+    vue_app.app_dragover = 'false';
   };
 
   document.documentElement.ondragover = function(event) {
     event.preventDefault();
-    if(app.$route.name === 'upload' || app.$route.name === 'buckets-objects')
-      app.app_dragover = 'true';
+    if(vue_app.$route.name === 'upload' || vue_app.$route.name === 'buckets-objects')
+      vue_app.app_dragover = 'true';
   };
 
   document.documentElement.ondrop = function(event) {
     event.preventDefault();
-    app.app_dragover = 'false';
+    vue_app.app_dragover = 'false';
 
-    if(app.$route.name === 'upload' || app.$route.name === 'buckets-objects') {
-      app.navbarGoTo('/upload');
-      app.listDropToUpload(event).then(function() {
-        app.startMaterialSelect();
+    if(vue_app.$route.name === 'upload' || vue_app.$route.name === 'buckets-objects') {
+      vue_app.navbarGoTo('/upload');
+      vue_app.listDropToUpload(event).then(function() {
+        vue_app.startMaterialSelect();
       });
     } else
       $('#modal_drop_object').modal('open');
   };
+
+  window.ononline = function(event) { vue_app.is_online = true; }
+  window.onoffline = function(event) { vue_app.is_online = false; }
 
   // Bugfix: if the hash does not start with "#/" vue-router will not process it properly.
   window.addEventListener('hashchange', function(event) {

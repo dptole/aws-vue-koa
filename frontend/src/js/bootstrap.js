@@ -29,8 +29,7 @@
     }
 
     registerServiceWorker(service_worker_script_url).then(function(registration) {
-      console.log(registration);
-      if(!registration.old) return location.reload();
+      if(!registration.old) return setTimeout(function() { location = '/'; }, 1000);
       app.classList.remove('sw-phase');
       return importScripts(['/js/app.js']);
     }).catch(function(error) {

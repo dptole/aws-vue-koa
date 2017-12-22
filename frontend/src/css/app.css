@@ -38,7 +38,7 @@ body {
   align-items: center;
 }
 
-#app:not([v-page=login]):not(.sw-phase) {
+#app[v-page]:not([v-page=login]):not(.sw-phase) {
   display: block;
   background-color: white !important;
 }
@@ -89,10 +89,18 @@ ul.hover-effect.collection .collection-item:not(.active):not(.avk-big-block-uplo
 }
 
 .avk-buckets-objects .fixed-action-btn {
-  bottom: initial !important;
-  top: 100px;
+  right: initial !important;
+  left: 23px;
 }
 
 #app[v-dragover=true] .fixed-action-btn {
   z-index: 0;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  width: 70%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

@@ -12,7 +12,7 @@
         </li>
 
         <li v-for="content, index in buckets_objects.Contents" v-show="buckets_objects.Prefix !== content.Key" class="collection-item">
-          {{ content.Key.replace(buckets_objects.Prefix, '') }}
+          <span class="text-ellipsis">{{ content.Key.replace(buckets_objects.Prefix, '') }}</span>
           <a v-show="is_normal_mode" href="/#!" @click.prevent="getObject(content)" class="secondary-content"><i class="green-text material-icons">file_download</i></a>
 
           <span v-show="is_delete_mode" class="right secondary-content">
@@ -25,7 +25,7 @@
 
         <li v-for="comment_prefix in buckets_objects.CommonPrefixes" v-show="buckets_objects.Prefix !== comment_prefix.Prefix" class="collection-item">
           <div>
-            {{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}
+            <span class="text-ellipsis">{{ comment_prefix.Prefix.replace(buckets_objects.Prefix, '') }}</span>
             <a v-show="is_normal_mode" href="/#!" @click.prevent="listObjects({prefix: comment_prefix.Prefix})" class="secondary-content"><i class="green-text material-icons">visibility</i></a>
           </div>
         </li>
@@ -84,18 +84,18 @@
     </div>
   </div>
 
-  <div class="fixed-action-btn horizontal" v-show="0">
+  <div class="fixed-action-btn" v-show="is_delete_mode">
     <a class="btn-floating btn-large blue">
-      <i class="large material-icons">menu</i>
+      <i class="large material-icons">more_vert</i>
     </a>
-    <ul v-show="is_normal_mode">
+    <ul v-show="0 &amp;&amp; is_normal_mode">
       <li><a v-if="containFiles()" class="btn-floating red" @click.prevent="deleteMode()"><i class="material-icons">delete</i></a></li>
       <li><a class="btn-floating purple" @click.prevent="refreshCurrentFolder()"><i class="material-icons">child_care</i></a></li>
       <li><a class="btn-floating orange" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a></li>
       <li><a class="btn-floating green" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a></li>
     </ul>
     <ul v-show="is_delete_mode">
-      <li><a class="btn-floating red" @click.prevent="modalDeleteMultipleObjects()"><i class="material-icons">delete_forever</i></a></li>
+      <li v-show="countFilesToDelete()"><a class="btn-floating red" @click.prevent="modalDeleteMultipleObjects()"><i class="material-icons">delete_forever</i></a></li>
       <li><a class="btn-floating green" @click.prevent="cancelDeleteMultipleObjects()"><i class="material-icons">undo</i></a></li>
     </ul>
   </div>

@@ -1,5 +1,15 @@
 const cache_version = getCacheVersion()
-
+const initial_cache = [
+  '/',
+  '/css/app.css',
+  '/components/login/avk-login.js',
+  '/components/buckets/avk-buckets.js',
+  '/fonts/roboto/Roboto-Bold.woff2',
+  '/fonts/roboto/Roboto-Regular.woff2',
+  '/images/logo.png',
+  '/js/bootstrap.js',
+  '/js/app.js'
+]
 const req_search_origin = '/* @echo REQUEST_SEARCH_ORIGIN */'
 const req_search_target = '/* @echo REQUEST_SEARCH_TARGET */'
 const req_search_outside = '/* @echo REQUEST_SEARCH_OUTSIDE */'
@@ -85,5 +95,9 @@ onactivate = function(event) {
 oninstall = function(event) {
   console.log('sw install')
   console.log(event)
-  skipWaiting()
+  event.waitUntil(
+    getCache().then(function(cache) {
+      return cache.addAll(initial_cache)
+    })
+  )
 }

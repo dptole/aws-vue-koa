@@ -168,7 +168,7 @@ gulp.task('copy', function(callback) {
 
 gulp.task('preprocess-dev', function(callback) {
   pump([
-    gulp.src(build_folder + '/**/*'),
+    gulp.src([build_folder + '/**/*.js', build_folder + '/**/*.html']),
     gulp_preprocess(getPreprocessConfigs()),
     gulp.dest(build_folder)
   ], callback)
@@ -176,7 +176,7 @@ gulp.task('preprocess-dev', function(callback) {
 
 gulp.task('preprocess-prod', function(callback) {
   pump([
-    gulp.src(build_folder + '/**/*'),
+    gulp.src([build_folder + '/**/*.js', build_folder + '/**/*.html']),
     gulp_preprocess(getPreprocessConfigs()),
     gulp.dest(build_folder)
   ], callback)

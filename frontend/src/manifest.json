@@ -1,0 +1,13 @@
+{
+  "short_name": "AVK",
+  "name": "AWS SDK + Vue.js + Koa",
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "type": "image/png",
+      "sizes": "400x400"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/?utm_source=pwa"
+}
