@@ -5,7 +5,7 @@
     {
       "src": "/images/logo.png",
       "type": "image/png",
-      "sizes": "400x400"
+      "sizes": "144x144"
     }
   ],
   "display": "standalone",
