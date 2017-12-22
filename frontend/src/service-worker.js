@@ -95,9 +95,9 @@ onactivate = function(event) {
 oninstall = function(event) {
   console.log('sw install')
   console.log(event)
-  event.waitUntil(
-    getCache().then(function(cache) {
-      return cache.addAll(initial_cache)
-    })
-  )
+  skipWaiting()
+
+  getCache().then(function(cache) {
+    return cache.addAll(initial_cache)
+  })
 }

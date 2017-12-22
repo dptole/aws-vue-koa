@@ -22,19 +22,19 @@
     }
 
     function registerServiceWorker(service_worker_script_url) {
-      return getRegistration(service_worker_script_url).catch(function() {
-        console.log('registering a new service worker');
+      return getRegistration(service_worker_script_url).catch(function(error) {
         return navigator.serviceWorker.register(service_worker_script_url);
       });
     }
 
     registerServiceWorker(service_worker_script_url).then(function(registration) {
-      if(!registration.old) return setTimeout(function() { location = '/'; }, 1000);
       app.classList.remove('sw-phase');
-      return importScripts(['/js/app.js']);
-    }).catch(function(error) {
-      var div = document.querySelector('.page-loading');
-      if(div && error) div.textContent = error.message;
+      return registration.old
+        ? importScripts(['/js/app.js'])
+        : navigator.serviceWorker.ready.then(function() {
+            location = '/';
+          })
+      ;
     });
   });
 
