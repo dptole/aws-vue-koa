@@ -5,7 +5,7 @@
       <ul class="collection with-header hover-effect">
         <li class="collection-header">
           <h4 class="green-text text-lighten-2 break-word">
-            <span v-for="prefix in buckets_objects.prefix_array" class="clickable" @click="is_normal_mode &amp;&amp; listObjects({prefix: prefix.breadcrumbs})">
+            <span v-for="prefix in buckets_objects.prefix_array" class="clickable" @click.prevent.stop="is_normal_mode &amp;&amp; listObjects({prefix: prefix.breadcrumbs})">
               {{ prefix.valueOf() }}/
             </span>
           </h4>

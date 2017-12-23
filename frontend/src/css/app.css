@@ -38,6 +38,10 @@ body {
   align-items: center;
 }
 
+#app:not([v-page=login]) .page-flexbox-wrapper {
+  min-height: 85vh !important;
+}
+
 #app[v-page]:not([v-page=login]):not(.sw-phase) {
   display: block;
   background-color: white !important;

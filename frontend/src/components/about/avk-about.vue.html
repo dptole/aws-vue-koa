@@ -32,14 +32,28 @@
       </p>
 
       <p>
-        Author: <a target="_blank" href="https://github.com/dptole">Danillo Paiva Toledo</a>
+        <a href="/#/" class="btn green" @click.prevent="requestNewVersion()" :disabled="is_loading">
+          <i class="material-icons left">system_update</i>
+          Check for updates
+          <div v-show="is_loading" class="progress">
+            <div class="indeterminate"></div>
+          </div>
+        </a>
       </p>
 
       <p>
-        <a href="/#/" class="btn green" @click.prevent="requestNewVersion()">
-          <i class="material-icons left">system_update</i>
-          Check for updates
+        <a id="install_pwa" v-show="pwa_install_event" href="/#/" class="btn green" @click.prevent="installPWA()" :disabled="is_loading">
+          <i class="material-icons left">whatshot</i>
+          Install PWA
         </a>
+      </p>
+
+      <p>
+        Made with <i class="material-icons red-text">favorite</i> by <a target="_blank" href="https://github.com/dptole">Danillo Paiva Toledo</a>
+      </p>
+
+      <p>
+        Visit the project <a target="_blank" href="https://github.com/dptole/aws-vue-koa">aws-vue-koa</a>
       </p>
     </div>
   </div>

@@ -46,6 +46,13 @@ $(document).ready(function() {
     }, {
       name: 'about',
       path: '/about',
+      beforeEnter: function(to, from, next) {
+        if(from.name === 'login' && vue_app.pwa_install_event) {
+          vue_app.installPWA();
+          next(false);
+        } else
+          next();
+      },
       components: {
         default: importComponent('about/avk-about'),
         nav: importComponent('nav/avk-nav')
@@ -84,6 +91,9 @@ $(document).ready(function() {
       // delete
       deleting: {},
       delete_multiple: [],
+      // progressive web app
+      toast_pwa: null,
+      pwa_install_event: null,
       // upload
       files_to_upload: [],
       uploaded_files: 0,
@@ -119,6 +129,14 @@ $(document).ready(function() {
           Materialize.toast('We are back! <i class="material-icons">cloud_done</i>', 2000);
         } else if(!new_value)
           vue_app.toast_offline = Materialize.toast('You are offline now. <i class="material-icons">cloud_off</i>');
+      },
+      pwa_install_event: function(new_value, old_value) {
+        if(!old_value && new_value) {
+          if(vue_app.$route.name === 'about')
+            vue_app.flashInstallPWAButton();
+          else
+            vue_app.toast_pwa = Materialize.toast('Install this Progressive Web App in your device. <a href="/#/about" class="white-text"><i class="material-icons right">phone_iphone</i></a>');
+        }
       }
     },
     created: function() {
@@ -126,6 +144,37 @@ $(document).ready(function() {
       this.app_loaded = true;
     },
     methods: {
+      whatIsThis: function() {
+        Materialize.toast('Manage your S3 buckets with AVK. <a href="https://github.com/dptole/aws-vue-koa" target="_blank" class="red-text"><i class="material-icons right">favorite</i></a>', 3000);
+      },
+      flashInstallPWAButton: function() {
+        document.documentElement.scrollTop = document.documentElement.scrollHeight;
+
+        var install_pwa = $('#install_pwa')
+          , total_toggles = 4
+        ;
+
+        var interval = setInterval(function() {
+          if(total_toggles < 1) {
+            if(!install_pwa.hasClass('green'))
+              install_pwa.addClass('green').removeClass('orange');
+            return clearInterval(interval);
+          }
+
+          if(install_pwa.hasClass('green')) {
+            install_pwa.addClass('orange').removeClass('green');
+            total_toggles--;
+          } else
+            install_pwa.addClass('green').removeClass('orange');
+
+        }, 400);
+      },
+      installPWA: function() {
+        if(vue_app.pwa_install_event) {
+          vue_app.pwa_install_event.prompt();
+          if(vue_app.toast_pwa) vue_app.toast_pwa.remove()
+        }
+      },
       refreshCurrentFolder: function() {
         if(vue_app.buckets_objects)
           vue_app.listObjects({
@@ -135,25 +184,28 @@ $(document).ready(function() {
       requestNewVersion: function() {
         this.state = 'loading';
         $('.button-collapse').sideNav('hide');
+
         return caches.open(vue_app.cache_version).then(function(cache) {
-          cache.keys().then(function(keys) {
+          return cache.keys().then(function(keys) {
             return keys.reduce(function(promise, key) {
               return promise.then(function() {
-                return cache.delete(key);
+                return cache.delete(key).catch(function() {});
               })
-            }, Promise.resolve()).then(function() {
-              navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                return registrations.reduce(function(promise, registration) {
-                  return promise.then(function() {
-                    return registration.update()
-                  })
-                }, Promise.resolve())
-              })
-            }).then(function() {
-              location.reload();
-            })
+            }, Promise.resolve());
           })
-        })
+        }).then(function() {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            return registrations.reduce(function(promise, registration) {
+              return promise.then(function() {
+                return registration.update();
+              })
+            }, Promise.resolve());
+          })
+        }).then(function() {
+          setTimeout(function() {
+            location.reload();
+          }, 1000);
+        });
       },
       containFiles: function() {
         return this.buckets_objects && this.buckets_objects.Contents.filter(function(content) {
@@ -382,6 +434,14 @@ $(document).ready(function() {
   }).$mount('#app');
 
   router.afterEach(function(to, from) {
+    if(to.name === 'about' && vue_app.pwa_install_event) {
+      requestAnimationFrame(function() {
+        vue_app.flashInstallPWAButton();
+        vue_app.toast_pwa.remove();
+        vue_app.toast_pwa = null;
+      })
+    }
+
     if(from.name === 'upload') {
       vue_app.files_to_upload = [];
       vue_app.uploaded_files = 0;
@@ -415,6 +475,22 @@ $(document).ready(function() {
     } else
       $('#modal_drop_object').modal('open');
   };
+
+  window.onbeforeinstallprompt = function(event) {
+    event.preventDefault();
+    console.log(event);
+
+    vue_app.pwa_install_event = event;
+    vue_app.pwa_install_event.userChoice = event.userChoice.then(function(choice) {
+      vue_app.pwa_install_event = null;
+      return choice;
+    }).catch(function(error) {
+      console.log(error);
+      return error;
+    });
+
+    return false;
+  }
 
   window.ononline = function(event) { vue_app.is_online = true; }
   window.onoffline = function(event) { vue_app.is_online = false; }
