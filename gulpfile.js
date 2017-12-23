@@ -125,8 +125,10 @@ gulp.task('css', function(callback) {
       build_folder + '/**/*.css',
       materialize_css_path[NODE_ENV]
     ]),
-    gulp_clean_css({keepSpecialComments: 0, processImport: true, processImportFrom: ['all'], rebase: false}),
+    gulp_clean_css({keepSpecialComments: 0, processImport: false, rebase: false}),
     gulp_concat('css/app.css'),
+    gulp_replace(/\/\*![^*]*(\*(?=\/)\/|\*[^*]*)*/gm, ''),
+    gulp_replace(/\n+/g, '\n'),
     gulp.dest(build_folder)
   ], callback)
 })
@@ -143,6 +145,17 @@ gulp.task('watch-prod', function(callback) {
   })
 })
 
+gulp.task('copy-css-dev', function(callback) {
+  pump([
+    gulp.src([
+      build_folder + '/**/*.css',
+      materialize_css_path[NODE_ENV]
+    ]),
+    gulp_concat('css/app.css'),
+    gulp.dest(build_folder)
+  ], callback)
+})
+
 gulp.task('copy', function(callback) {
   pump([
     gulp.src(src_folder + '/**/*'),
@@ -150,19 +163,10 @@ gulp.task('copy', function(callback) {
   ], function() {
     pump([
       gulp.src([
-        build_folder + '/**/*.css',
-        materialize_css_path[NODE_ENV]
+        materialize_font_path[NODE_ENV]
       ]),
-      gulp_concat('css/app.css'),
-      gulp.dest(build_folder)
-    ], function() {
-      pump([
-        gulp.src([
-          materialize_font_path[NODE_ENV]
-        ]),
-        gulp.dest(build_folder + '/fonts')
-      ], callback)
-    })
+      gulp.dest(build_folder + '/fonts')
+    ], callback)
   })
 })
 
@@ -202,5 +206,5 @@ gulp.task('prod', function(callback) {
 gulp.task('dev', ['default'])
 
 gulp.task('default', function(callback) {
-  return gulp_run_sequence('del', 'copy', 'preprocess-vue', 'preprocess-dev', 'vue', 'clean-up', callback)
+  return gulp_run_sequence('del', 'copy', 'copy-css-dev', 'preprocess-vue', 'preprocess-dev', 'vue', 'clean-up', callback)
 })

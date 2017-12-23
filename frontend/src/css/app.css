@@ -49,7 +49,7 @@ body {
 #app[v-page]:not([v-page=login]):not(.sw-phase) {
   display: block;
   background-color: white !important;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .clickable {

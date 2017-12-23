@@ -44,34 +44,37 @@
     </li>
   </ul>
 
-  <nav class="black">
-    <div class="nav-wrapper">
-      <a v-show="!is_loading &amp;&amp; is_normal_mode" data-activates="sidenav_menu" class="button-collapse clickable"><i class="material-icons">menu</i></a>
+  <div class="navbar-fixed">
+    <nav class="black">
+      <div class="nav-wrapper">
+        <a v-show="!is_loading &amp;&amp; is_normal_mode" data-activates="sidenav_menu" class="button-collapse clickable"><i class="material-icons">menu</i></a>
 
-      <ul v-show="!is_loading &amp;&amp; is_normal_mode" id="nav-mobile" class="left hide-on-med-and-down">
-        <li v-show="buckets_objects">
-          <a href="/#/upload" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a>
-        </li>
-        <li v-show="buckets_objects">
-          <a href="/#" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a>
-        </li>
-        <li>
-          <a href="/#" @click.prevent="requestNewVersion()"><i class="material-icons">system_update</i></a>
-        </li>
-      </ul>
+        <ul v-show="!is_loading &amp;&amp; is_normal_mode" class="left hide-on-med-and-down">
+          <li v-show="buckets_objects">
+            <a href="/#/upload" @click.prevent="navbarGoTo('/upload')"><i class="material-icons">cloud_upload</i></a>
+          </li>
+          <li v-show="buckets_objects">
+            <a href="/#" @click.prevent="navbarGoTo('/dashboard')"><i class="material-icons">archive</i></a>
+          </li>
+          <li>
+            <a href="/#" @click.prevent="requestNewVersion()"><i class="material-icons">system_update</i></a>
+          </li>
+        </ul>
 
-      <a href="#" @click.prevent.stop="goToDashboard()" class="brand-logo center">AVK</a>
+        <a href="#" @click.prevent.stop="goToDashboard()" class="brand-logo center">AVK</a>
 
-      <ul v-show="!is_loading &amp;&amp; is_normal_mode" id="nav-mobile" class="right hide-on-med-and-down">
-        <li>
-          <a href="/#/logout"><i class="material-icons">power_settings_new</i></a>
-        </li>
-      </ul>
-      <ul v-show="!is_loading &amp;&amp; is_normal_mode &amp;&amp; buckets_objects" id="nav-mobile" class="right">
-        <li>
-          <a href="/#" @click.prevent="refreshCurrentFolder()"><i class="material-icons">child_care</i></a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+        <ul v-show="!is_loading &amp;&amp; is_normal_mode" class="right hide-on-med-and-down">
+          <li>
+            <a href="/#/logout"><i class="material-icons">power_settings_new</i></a>
+          </li>
+        </ul>
+
+        <ul v-show="!is_loading &amp;&amp; is_normal_mode &amp;&amp; buckets_objects &amp;&amp; $route.name === 'buckets-objects'" class="right">
+          <li>
+            <a href="/#" @click.prevent="refreshCurrentFolder()"><i class="material-icons">child_care</i></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
 </div>
