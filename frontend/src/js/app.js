@@ -16,6 +16,7 @@ $(document).ready(function() {
       name: 'logout',
       path: '/logout',
       beforeEnter: function(to, from, next) {
+        vue_app.buckets = null;
         vue_app.state = 'normal';
         next('/login');
       }
@@ -82,6 +83,7 @@ $(document).ready(function() {
       access_key_id: localStorage.last_access_key_id || '',
       secret_access_key: localStorage.last_secret_access_key || '',
       region: localStorage.last_region || '',
+      what_is_this: null,
       // dashboard
       buckets: null,
       // buckets objects
@@ -121,14 +123,10 @@ $(document).ready(function() {
     },
     watch: {
       is_online: function(new_value, old_value) {
-        if(!old_value && new_value) {
-          if(vue_app.toast_offline) {
-            vue_app.toast_offline.remove();
-            vue_app.toast_offline = null;
-          }
-          Materialize.toast('We are back! <i class="material-icons">cloud_done</i>', 2000);
-        } else if(!new_value)
-          vue_app.toast_offline = Materialize.toast('You are offline now. <i class="material-icons">cloud_off</i>');
+        if(!old_value && new_value)
+          vue_app.notifyOnline();
+        else if(!new_value)
+          vue_app.notifyOffline();
       },
       pwa_install_event: function(new_value, old_value) {
         if(!old_value && new_value) {
@@ -142,10 +140,23 @@ $(document).ready(function() {
     created: function() {
       this.goToLoginIfUnknownPath();
       this.app_loaded = true;
+      if(!this.is_online) this.notifyOffline();
     },
     methods: {
+      notifyOnline: function() {
+        if(this.toast_offline) {
+          this.toast_offline.remove();
+          this.toast_offline = null;
+        }
+        Materialize.toast('We are back! <i class="material-icons right">cloud_done</i>', 2000);
+      },
+      notifyOffline: function() {
+        if(this.toast_offline) this.toast_offline.remove();
+        this.toast_offline = Materialize.toast('You are offline now. <i class="material-icons right">cloud_off</i>');
+      },
       whatIsThis: function() {
-        Materialize.toast('Manage your S3 buckets with AVK. <a href="https://github.com/dptole/aws-vue-koa" target="_blank" class="red-text"><i class="material-icons right">favorite</i></a>', 3000);
+        if(this.what_is_this) this.what_is_this.remove();
+        this.what_is_this = Materialize.toast('Manage your S3 buckets with AVK. <a href="https://github.com/dptole/aws-vue-koa" target="_blank" class="red-text"><i class="material-icons right">favorite</i></a>', 3000);
       },
       flashInstallPWAButton: function() {
         document.documentElement.scrollTop = document.documentElement.scrollHeight;
@@ -170,9 +181,9 @@ $(document).ready(function() {
         }, 400);
       },
       installPWA: function() {
-        if(vue_app.pwa_install_event) {
-          vue_app.pwa_install_event.prompt();
-          if(vue_app.toast_pwa) vue_app.toast_pwa.remove()
+        if(this.pwa_install_event) {
+          this.pwa_install_event.prompt();
+          if(this.toast_pwa) this.toast_pwa.remove();
         }
       },
       refreshCurrentFolder: function() {
@@ -432,6 +443,13 @@ $(document).ready(function() {
       }
     }
   }).$mount('#app');
+
+  router.beforeEach(function(to, from, next) {
+    if(from.name === 'login' && to.name !== 'login' && !vue_app.buckets)
+      next('/login');
+    else
+      next();
+  });
 
   router.afterEach(function(to, from) {
     if(to.name === 'about' && vue_app.pwa_install_event) {

@@ -4,6 +4,7 @@ const initial_cache = [
   '/css/app.css',
   '/components/login/avk-login.js',
   '/components/buckets/avk-buckets.js',
+  '/fonts/material-icons/v32/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2',
   '/fonts/roboto/Roboto-Bold.woff2',
   '/fonts/roboto/Roboto-Regular.woff2',
   '/images/logo-192x192.png',
