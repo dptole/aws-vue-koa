@@ -432,13 +432,15 @@ $(document).ready(function() {
         });
 
         return vue_app.readEntries(entries).then(function(file_objects) {
-          return vue_app.files_to_upload = file_objects.map(function(file_object) {
-            return {
-              filename: file_object.filename,
-              file_object: file_object.file,
-              status: 'waiting'
-            }
-          });
+          return vue_app.files_to_upload = vue_app.files_to_upload.concat(
+            file_objects.map(function(file_object) {
+              return {
+                filename: file_object.filename,
+                file_object: file_object.file,
+                status: 'waiting'
+              }
+            })
+          );
         });
       }
     }
@@ -491,7 +493,7 @@ $(document).ready(function() {
         vue_app.startMaterialSelect();
       });
     } else
-      $('#modal_drop_object').modal('open');
+      Materialize.toast('You cannot upload files from here.', 3000);
   };
 
   window.onbeforeinstallprompt = function(event) {
