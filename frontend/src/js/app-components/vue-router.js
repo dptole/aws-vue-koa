@@ -6,7 +6,6 @@ var router = new VueRouter({
       if(vue_app) {
         vue_app.access_key_id = localStorage.last_access_key_id || '';
         vue_app.secret_access_key = localStorage.last_secret_access_key || '';
-        vue_app.region = localStorage.last_region || '';
       }
       next();
     },

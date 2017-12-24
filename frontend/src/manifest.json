@@ -14,7 +14,7 @@
     "type": "image/png",
     "sizes": "128x128"
   }],
-  "background_color": "#000000",
+  "background_color": "#FFFFFF",
   "theme_color": "#000000",
   "display": "standalone",
   "start_url": "/?utm_source=pwa"

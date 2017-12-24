@@ -40,8 +40,7 @@ function backendApp(_package) {
       return koa_json_body_1kb(ctx, next).then(_ => {
         if(!(
           'access_key_id' in ctx.request.body &&
-          'secret_access_key' in ctx.request.body &&
-          'region' in ctx.request.body
+          'secret_access_key' in ctx.request.body
         )) {
           ctx.status = 400
           return ctx.body = {
@@ -51,8 +50,7 @@ function backendApp(_package) {
 
         const s3_instance = s3_lib({
           accessKeyId: ctx.request.body.access_key_id,
-          secretAccessKey: ctx.request.body.secret_access_key,
-          region: ctx.request.body.region
+          secretAccessKey: ctx.request.body.secret_access_key
         })
 
         return s3_instance.listBuckets().then(buckets =>
@@ -71,7 +69,6 @@ function backendApp(_package) {
       if(!(
         'access_key_id' in ctx.query &&
         'secret_access_key' in ctx.query &&
-        'region' in ctx.query &&
         'bucket' in ctx.query &&
         'max_keys' in ctx.query &&
         'prefix' in ctx.query &&
@@ -86,8 +83,7 @@ function backendApp(_package) {
 
       const s3_instance = s3_lib({
         accessKeyId: ctx.query.access_key_id,
-        secretAccessKey: ctx.query.secret_access_key,
-        region: ctx.query.region
+        secretAccessKey: ctx.query.secret_access_key
       })
 
       return s3_instance.listObjectsV2({
@@ -111,7 +107,6 @@ function backendApp(_package) {
       if(!(
         'access_key_id' in ctx.query &&
         'secret_access_key' in ctx.query &&
-        'region' in ctx.query &&
         'bucket' in ctx.query &&
         'key' in ctx.query
       )) {
@@ -123,8 +118,7 @@ function backendApp(_package) {
 
       const s3_instance = s3_lib({
         accessKeyId: ctx.query.access_key_id,
-        secretAccessKey: ctx.query.secret_access_key,
-        region: ctx.query.region
+        secretAccessKey: ctx.query.secret_access_key
       })
 
       return s3_instance.getObject({
@@ -147,7 +141,6 @@ function backendApp(_package) {
       if(!(
         'access_key_id' in ctx.query &&
         'secret_access_key' in ctx.query &&
-        'region' in ctx.query &&
         'bucket_name' in ctx.query &&
         'key' in ctx.query
       )) {
@@ -159,8 +152,7 @@ function backendApp(_package) {
 
       const s3_instance = s3_lib({
         accessKeyId: ctx.query.access_key_id,
-        secretAccessKey: ctx.query.secret_access_key,
-        region: ctx.query.region
+        secretAccessKey: ctx.query.secret_access_key
       })
 
       return s3_instance.deleteObject({
@@ -187,7 +179,6 @@ function backendApp(_package) {
         if(!(
           'access_key_id' in ctx.query &&
           'secret_access_key' in ctx.query &&
-          'region' in ctx.query &&
           'bucket_name' in ctx.query &&
           'filename' in ctx.query &&
           'prefix' in ctx.query &&
@@ -201,8 +192,7 @@ function backendApp(_package) {
 
         const s3_instance = s3_lib({
           accessKeyId: ctx.query.access_key_id,
-          secretAccessKey: ctx.query.secret_access_key,
-          region: ctx.query.region
+          secretAccessKey: ctx.query.secret_access_key
         })
 
         return s3_instance.putObject({

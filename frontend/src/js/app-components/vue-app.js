@@ -12,7 +12,6 @@ var vue_app = new Vue({
     // login
     access_key_id: localStorage.last_access_key_id || '',
     secret_access_key: localStorage.last_secret_access_key || '',
-    region: localStorage.last_region || '',
     toast_what_is_this: null,
     // dashboard
     buckets: null,
@@ -25,6 +24,7 @@ var vue_app = new Vue({
     delete_multiple: [],
     // progressive web app
     toast_pwa: null,
+    toast_pwa_dismissed: localStorage.pwa_installation_dismissed,
     pwa_install_event: null,
     // upload
     files_to_upload: [],
@@ -62,8 +62,18 @@ var vue_app = new Vue({
       if(!old_value && new_value) {
         if(vue_app.$route.name === 'about')
           vue_app.flashInstallPWAButton();
-        else
-          vue_app.toast_pwa = Materialize.toast('Install this Progressive Web App in your device. <a href="/#/about" class="white-text"><i class="material-icons right">phone_iphone</i></a>');
+        else if(!vue_app.toast_pwa_dismissed) {
+          vue_app.toast_pwa = Materialize.toast(
+            'Install this Progressive Web App in your device for a native experience! ' +
+            '<a href="/#/about" class="white-text toast_pwa_install"><i class="material-icons right">phone_iphone</i></a>' +
+            '<a href="/#/about" class="white-text toast_pwa_remove"><i class="material-icons right">clear</i></a>'
+          );
+          vue_app.toast_pwa.el.querySelector('.toast_pwa_install').onclick = vue_app.installPWA;
+          vue_app.toast_pwa.el.querySelector('.toast_pwa_remove').onclick = function() {
+            vue_app.toast_pwa.remove();
+            vue_app.toast_pwa_dismissed = localStorage.pwa_installation_dismissed = 1;
+          }
+        }
       }
     }
   },
@@ -85,8 +95,18 @@ var vue_app = new Vue({
       this.toast_offline = Materialize.toast('You are offline now. <i class="material-icons right">cloud_off</i>');
     },
     whatIsThis: function() {
-      if(this.toast_what_is_this) this.toast_what_is_this.remove();
-      this.toast_what_is_this = Materialize.toast('<a href="https://github.com/dptole/aws-vue-koa" target="_blank" class="white-text">Manage your S3 buckets with AVK.</a> <i class="material-icons right red-text">favorite</i>', 3000, '', function() { vue_app.toast_what_is_this = null; });
+      if(this.toast_what_is_this) return;
+      this.toast_what_is_this = Materialize.toast(
+        '<a href="https://github.com/dptole/aws-vue-koa" target="_blank" class="white-text">' +
+          'Manage your S3 buckets with AVK.' +
+        '</a> ' +
+        '<i class="material-icons right red-text">favorite</i>',
+        3000,
+        '',
+        function() {
+          vue_app.toast_what_is_this = null;
+        }
+      );
     },
     flashInstallPWAButton: function() {
       document.documentElement.scrollTop = document.documentElement.scrollHeight;
@@ -302,8 +322,7 @@ var vue_app = new Vue({
     serializeQueryString: function(qs) {
       return [
         ['access_key_id', vue_app.access_key_id],
-        ['secret_access_key', vue_app.secret_access_key],
-        ['region', vue_app.region]
+        ['secret_access_key', vue_app.secret_access_key]
       ].concat(qs).reduce(function(acc, query) {
         return acc.concat(encodeURIComponent(query[0]) + '=' + encodeURIComponent(query[1]));
       }, []).join('&');
