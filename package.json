@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.165.0",
+    "aws-sdk": "^2.814.0",
     "braces": ">=2.3.1",
     "clean-css": ">=4.1.11",
     "concat-with-sourcemaps": ">=1.0.6",
